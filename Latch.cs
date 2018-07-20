@@ -1,0 +1,28 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace BaseGameLogic.Utilities
+{
+    public class Latch
+    {
+        private bool _isLatch = true;
+
+        public void Set()
+        {
+            _isLatch = false;
+        }
+
+        public void Reset()
+        {
+            _isLatch = true;
+        }
+
+        public static implicit operator bool (Latch l)
+        {
+            var stats = l._isLatch;
+            l.Set();
+            return stats;
+        }
+    }
+}
