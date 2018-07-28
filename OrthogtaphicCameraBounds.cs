@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace BaseGameLogic.Utilities
 {
     [Serializable] public class OrthogtaphicCameraBounds
