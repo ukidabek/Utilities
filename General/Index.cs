@@ -12,16 +12,19 @@ namespace BaseGameLogic.Utilities
 
         public Index() {}
 
-        public Index(int current, int count)
-        {
-            _current = current < 0 ? 0 : current > count ? count - 1 : current;
-            Count = count;
-        }
-
         public Index(int count)
         {
             Count = count;
         }
+
+        public Index(int current, int count) : this(count)
+        {
+            _current = current < 0 ? 0 : current > count ? count - 1 : current;
+        }
+
+        public Index(IList list) : this (list.Count) {}
+
+        public Index(int current, IList list) : this(current, list.Count) {}
 
         private void LoopIndex()
         {

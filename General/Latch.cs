@@ -8,6 +8,11 @@ namespace BaseGameLogic.Utilities
     {
         private bool _isLatch = true;
 
+        public Latch(bool isLatch = true)
+        {
+            _isLatch = isLatch;
+        }
+
         public void Set()
         {
             _isLatch = false;

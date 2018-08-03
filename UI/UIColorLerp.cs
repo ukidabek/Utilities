@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace BaseGameLogic.Utilities.UI
 {
-    public class ColorLerp : MonoBehaviour
+    public class UIColorLerp : MonoBehaviour
     {
         private enum Mode { AtoB, BtoA }
         [SerializeField] private Mode _mode = Mode.AtoB;
