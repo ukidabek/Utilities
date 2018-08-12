@@ -60,7 +60,11 @@ namespace BaseGameLogic.Utilities
             public string ParameterName { get { return _parameterName; } }
 
             [SerializeField] private TypeInfo _type = null;
-            public TypeInfo Type { get { return _type; } }
+            public TypeInfo Type
+            {
+                get { return _type; }
+                set { _type = value; }
+            }
 
 
             public UnityEngine.Object ObjectValue;
@@ -68,10 +72,11 @@ namespace BaseGameLogic.Utilities
             public float FloatValue = 0f;
             public bool BoolValue = false;
             public string StringValue = string.Empty;
+            public Color ColorValue = Color.white;
 
             public ConstructorParameter(ParameterInfo parameterInfo)
             {
-                _type = new TypeInfo(parameterInfo.ParameterType);
+                Type = new TypeInfo(parameterInfo.ParameterType);
                 _parameterName = parameterInfo.Name;
             }
 
@@ -85,7 +90,7 @@ namespace BaseGameLogic.Utilities
 
             public object GetObject()
             {
-                Type type = _type;
+                Type type = Type;
                 switch (type.Name)
                 {
                     case "Int32":
@@ -96,6 +101,8 @@ namespace BaseGameLogic.Utilities
                         return BoolValue;
                     case "String":
                         return StringValue;
+                    case "Color":
+                        return ColorValue;
                     default:
                         return ObjectValue;
                 }
@@ -103,7 +110,11 @@ namespace BaseGameLogic.Utilities
         }
 
         [SerializeField] private TypeInfo _baseType = null;
-        public TypeInfo BaseType { get { return _baseType; } }
+        public TypeInfo BaseType
+        {
+            get { return _baseType; }
+            set { _baseType = value; }
+        }
 
         [SerializeField] private TypeInfo _type = null;
         public TypeInfo Type { get { return _type; } }
@@ -113,6 +124,8 @@ namespace BaseGameLogic.Utilities
 
         [SerializeField] private string _name = string.Empty;
         public string Name { get { return _name; } }
+
+        public ClassConstructor() {}
 
         public ClassConstructor(Type type)
         {
@@ -135,7 +148,8 @@ namespace BaseGameLogic.Utilities
             _name += ")";
         }
 
-        public object GetInstance()
+
+        public object CreateInstance()
         {
             object[] data = new object[_parameters.Length];
 

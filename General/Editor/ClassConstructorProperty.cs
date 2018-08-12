@@ -12,76 +12,99 @@ namespace BaseGameLogic.Utilities
     public class ClassInfoProperty : PropertyDrawer
     {
         private List<string> constructorNames = new List<string>();
-        private List<ClassConstructor> _stateInfoList = new List<ClassConstructor>();
+        private List<ClassConstructor> _constructorsList = new List<ClassConstructor>();
 
         private ClassConstructor classsConstructor = null;
         private FieldInfo field = null;
+        private Type baseType;
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            if (classsConstructor == null)
-            {
-                field = property.serializedObject.targetObject.GetType().GetField(property.propertyPath, BindingFlags.NonPublic | BindingFlags.Instance);
-                classsConstructor = field.GetValue(property.serializedObject.targetObject) as ClassConstructor;
-            }
+            Initialize(property);
+            return EditorGUIUtility.singleLineHeight * (classsConstructor.Parameters == null ? 1 : classsConstructor.Parameters.Length + 3);
+        }
 
-            if (constructorNames.Count == 0)
+        private void Initialize(SerializedProperty property)
+        {
+            field = property.serializedObject.targetObject.GetType().GetField(property.propertyPath, BindingFlags.NonPublic | BindingFlags.Instance);
+            classsConstructor = field.GetValue(property.serializedObject.targetObject) as ClassConstructor;
+
+            if (_constructorsList.Count == 0 || (_constructorsList.Count > 0 && (Type)_constructorsList[0].BaseType != (Type)classsConstructor.BaseType))
             {
+                constructorNames.Clear();
+                _constructorsList.Clear();
                 var types = GetTypes();
-                if(types != null && types.Length > 0)
+                if (types != null && types.Length > 0)
                 {
-                    foreach (var type in GetTypes())
+                    foreach (var type in types)
                     {
                         foreach (var constructor in type.GetConstructors())
                         {
-                            _stateInfoList.Add(new ClassConstructor(constructor, classsConstructor.BaseType));
-                            constructorNames.Add(_stateInfoList[_stateInfoList.Count - 1].Name);
+                            _constructorsList.Add(new ClassConstructor(constructor, classsConstructor.BaseType));
+                            constructorNames.Add(_constructorsList[_constructorsList.Count - 1].Name);
                         }
                     }
-
-                    if (string.IsNullOrEmpty(classsConstructor.Type.FullName) && string.IsNullOrEmpty(classsConstructor.Type.AssemblFullName))
-                        classsConstructor = _stateInfoList[0];
                 }
             }
 
-            return EditorGUIUtility.singleLineHeight * (classsConstructor.Parameters == null ? 1 : classsConstructor.Parameters.Length + 2);
+            if (string.IsNullOrEmpty(classsConstructor.Type.FullName) && string.IsNullOrEmpty(classsConstructor.Type.AssemblFullName) && _constructorsList.Count > 0)
+                classsConstructor = _constructorsList[0];
         }
 
         private Type[] GetTypes()
         {
-            Type type = (Type)classsConstructor.BaseType;
-            Func<Type, bool> quiry = (Type arg) => { return type.IsAssignableFrom(arg) && arg.BaseType == typeof(System.Object) && !arg.IsInterface; };
+            baseType = classsConstructor.BaseType;
+            if (baseType == null)
+                return null;
+
+            Func<Type, bool> quiry = (Type arg) => { return baseType.IsAssignableFrom(arg) && arg.BaseType == typeof(System.Object) && !arg.IsInterface; };
             var typesEnumerator = AppDomain.CurrentDomain.GetAssemblies().SelectMany(s => s.GetTypes()).Where(quiry);
             if (typesEnumerator.Count() == 0)
                 return null;
+
             return typesEnumerator == null ? null : typesEnumerator.ToArray();
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            int index = _stateInfoList.IndexOf(classsConstructor);
-            if (index < 0)
-            {
-                classsConstructor = _stateInfoList[index = 0];
-                field.SetValue(property.serializedObject.targetObject, classsConstructor);
-            }
+            Rect interfaceSelect = position;
+            interfaceSelect.height = EditorGUIUtility.singleLineHeight;
 
-            if(_stateInfoList.Count < 0)
+            GUI.Label(interfaceSelect, new GUIContent(property.displayName));
+            interfaceSelect.y += EditorGUIUtility.singleLineHeight;
+
+            Type baseType = classsConstructor.BaseType;
+
+            if (GUI.Button(interfaceSelect, new GUIContent(baseType == null ? "No interface selected." : baseType.Name)))
+                new SelectInterfaceEditor(position, property).Show();
+
+            int index = _constructorsList.IndexOf(classsConstructor);
+            interfaceSelect.y += EditorGUIUtility.singleLineHeight;
+
+            if (_constructorsList.Count <= 0)
             {
-                EditorGUI.LabelField(position, new GUIContent(string.Format("There is no classes that extends or implement {0}.", ((Type)classsConstructor.BaseType).Name)));
+                if (baseType == null)
+                    EditorGUI.LabelField(interfaceSelect, new GUIContent("No interface selected."));
+                else
+                    EditorGUI.LabelField(interfaceSelect, new GUIContent(string.Format("There is no classes that extends or implement {0}.", ((Type)classsConstructor.BaseType).Name)));
                 return;
             }
 
-            Rect rect = position;
+            //if (index < 0)
+            //{
+            //    classsConstructor = _constructorsList[index = 0];
+            //    field.SetValue(property.serializedObject.targetObject, classsConstructor);
+            //}
+
+            Rect rect = interfaceSelect;
             rect.height = EditorGUIUtility.singleLineHeight;
-            GUI.Label(rect, new GUIContent(property.displayName));
-            rect.y += EditorGUIUtility.singleLineHeight;
             index = EditorGUI.Popup(rect, index, constructorNames.ToArray());
             for (int i = 0; i < classsConstructor.Parameters.Length; i++)
             {
                 rect.y += EditorGUIUtility.singleLineHeight;
                 Type parametersType = classsConstructor.Parameters[i].Type;
                 GUIContent parameterLabel = new GUIContent(classsConstructor.Parameters[i].ParameterName);
+                
                 switch (parametersType.Name)
                 {
                     case "Int32":
@@ -96,19 +119,66 @@ namespace BaseGameLogic.Utilities
                     case "String":
                         classsConstructor.Parameters[i].StringValue = EditorGUI.TextField(rect, parameterLabel, classsConstructor.Parameters[i].StringValue);
                         break;
+                    case "Color":
+                        classsConstructor.Parameters[i].ColorValue = EditorGUI.ColorField(rect, parameterLabel, classsConstructor.Parameters[i].ColorValue);
+                        break;
                     default:
                         classsConstructor.Parameters[i].ObjectValue = EditorGUI.ObjectField(rect, parameterLabel, classsConstructor.Parameters[i].ObjectValue, parametersType, true);
                         break;
                 }
             }
 
-            if (classsConstructor != _stateInfoList[index])
+            if (classsConstructor != _constructorsList[index])
             {
-                classsConstructor = _stateInfoList[index];
+                classsConstructor = _constructorsList[index];
                 field.SetValue(property.serializedObject.targetObject, classsConstructor);
+                property.serializedObject.ApplyModifiedProperties();
+            }
+        }
+    }
+
+    public class SelectInterfaceEditor : EditorWindow
+    {
+        private SerializedProperty property;
+        private ClassConstructor classsConstructor;
+
+        private string serchQuire = string.Empty;
+        private IEnumerable<Type> searchResult;
+        private FieldInfo field = null;
+
+        public SelectInterfaceEditor(Rect position, SerializedProperty property)
+        {
+            this.position = position;
+            this.property = property;
+
+            field = property.serializedObject.targetObject.GetType().GetField(property.propertyPath, BindingFlags.NonPublic | BindingFlags.Instance);
+            classsConstructor = field.GetValue(property.serializedObject.targetObject) as ClassConstructor;
+        }
+
+        private void OnGUI()
+        {
+            EditorGUI.BeginChangeCheck();
+            {
+                serchQuire = EditorGUILayout.TextField("Search", serchQuire);
+            }
+            if(EditorGUI.EndChangeCheck())
+            {
+                searchResult = AppDomain.CurrentDomain.GetAssemblies().SelectMany(s => s.GetTypes()).Where(t => t.Name.Contains(serchQuire));
             }
 
-            property.serializedObject.ApplyModifiedProperties();
+            if(searchResult != null && searchResult.Count() > 0)
+            {
+                foreach (var item in searchResult)
+                {
+                    if(GUILayout.Button(item.Name))
+                    {
+                        field.SetValue(property.serializedObject.targetObject, new ClassConstructor(item));
+                        property.serializedObject.ApplyModifiedProperties();
+                        this.Close();
+                        break;
+                    }
+                }
+            }
         }
     }
 }
