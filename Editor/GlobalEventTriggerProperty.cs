@@ -8,6 +8,8 @@ namespace BaseGameLogic.Utilities
     [CustomPropertyDrawer(typeof(GlobalEventTrigger))]
     public class GlobalEventTriggerProperty : PropertyDrawer
     {
+        List<string> eventNames = new List<string>();
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var globalEventManager = GameObject.FindObjectOfType<GlobalEventsManager>();
@@ -20,15 +22,16 @@ namespace BaseGameLogic.Utilities
                 else
                 {
                     var nameProperty = property.FindPropertyRelative("_eventName");
-                    List<string> eventNames = new List<string>();
-                    for (int i = 0; i < globalEventManager.EventList.Count; i++)
-                    {
-                        eventNames.Add(globalEventManager.EventList[i].Name);
-                    }
+
+                    if(eventNames.Count == 0)
+                        for (int i = 0; i < globalEventManager.EventList.Count; i++)
+                            eventNames.Add(globalEventManager.EventList[i].Name);
+
                     int index = eventNames.IndexOf(nameProperty.stringValue);
                     index = EditorGUI.Popup(position, index, eventNames.ToArray());
                     if (index >= 0)
                         nameProperty.stringValue = eventNames[index];
+                    property.serializedObject.ApplyModifiedProperties();
                 }
             }
         }

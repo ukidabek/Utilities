@@ -45,7 +45,11 @@ namespace BaseGameLogic.Utilities
         {
             GlobalEvent @event = null;
             if (_eventsDictionary.TryGetValue(name, out @event))
+            {
                 @event.ActivateEvent(data);
+            }
+            else
+                Debug.LogFormat("There is no event name of {0}.", name);
         }
     }
 }

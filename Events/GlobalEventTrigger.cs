@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace BaseGameLogic.Utilities
 {
-    [Serializable]
-    public class GlobalEventTrigger
+    [Serializable] public class GlobalEventTrigger
     {
         [SerializeField] private string _eventName = string.Empty;
 
