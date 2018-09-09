@@ -77,7 +77,6 @@ namespace BaseGameLogic.Utilities
 
             if (GUI.Button(interfaceSelect, new GUIContent(baseType == null ? "No interface selected." : baseType.Name)))
                 new SelectInterfaceEditor(position, property).Show();
-                //new SelectAssembliesEditor().Show();
 
             int index = _constructorsList.IndexOf(classsConstructor);
             interfaceSelect.y += EditorGUIUtility.singleLineHeight;
