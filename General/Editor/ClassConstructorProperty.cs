@@ -77,6 +77,7 @@ namespace BaseGameLogic.Utilities
 
             if (GUI.Button(interfaceSelect, new GUIContent(baseType == null ? "No interface selected." : baseType.Name)))
                 new SelectInterfaceEditor(position, property).Show();
+                //new SelectAssembliesEditor().Show();
 
             int index = _constructorsList.IndexOf(classsConstructor);
             interfaceSelect.y += EditorGUIUtility.singleLineHeight;
@@ -89,12 +90,6 @@ namespace BaseGameLogic.Utilities
                     EditorGUI.LabelField(interfaceSelect, new GUIContent(string.Format("There is no classes that extends or implement {0}.", ((Type)classsConstructor.BaseType).Name)));
                 return;
             }
-
-            //if (index < 0)
-            //{
-            //    classsConstructor = _constructorsList[index = 0];
-            //    field.SetValue(property.serializedObject.targetObject, classsConstructor);
-            //}
 
             Rect rect = interfaceSelect;
             rect.height = EditorGUIUtility.singleLineHeight;
@@ -133,51 +128,6 @@ namespace BaseGameLogic.Utilities
                 classsConstructor = _constructorsList[index];
                 field.SetValue(property.serializedObject.targetObject, classsConstructor);
                 property.serializedObject.ApplyModifiedProperties();
-            }
-        }
-    }
-
-    public class SelectInterfaceEditor : EditorWindow
-    {
-        private SerializedProperty property;
-        private ClassConstructor classsConstructor;
-
-        private string serchQuire = string.Empty;
-        private IEnumerable<Type> searchResult;
-        private FieldInfo field = null;
-
-        public SelectInterfaceEditor(Rect position, SerializedProperty property)
-        {
-            this.position = position;
-            this.property = property;
-
-            field = property.serializedObject.targetObject.GetType().GetField(property.propertyPath, BindingFlags.NonPublic | BindingFlags.Instance);
-            classsConstructor = field.GetValue(property.serializedObject.targetObject) as ClassConstructor;
-        }
-
-        private void OnGUI()
-        {
-            EditorGUI.BeginChangeCheck();
-            {
-                serchQuire = EditorGUILayout.TextField("Search", serchQuire);
-            }
-            if(EditorGUI.EndChangeCheck())
-            {
-                searchResult = AppDomain.CurrentDomain.GetAssemblies().SelectMany(s => s.GetTypes()).Where(t => t.Name.Contains(serchQuire));
-            }
-
-            if(searchResult != null && searchResult.Count() > 0)
-            {
-                foreach (var item in searchResult)
-                {
-                    if(GUILayout.Button(item.Name))
-                    {
-                        field.SetValue(property.serializedObject.targetObject, new ClassConstructor(item));
-                        property.serializedObject.ApplyModifiedProperties();
-                        this.Close();
-                        break;
-                    }
-                }
             }
         }
     }

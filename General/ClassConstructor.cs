@@ -12,8 +12,7 @@ namespace BaseGameLogic.Utilities
     /// </summary>
     [Serializable] public class ClassConstructor
     {
-        [Serializable]
-        public class TypeInfo
+        [Serializable] public class TypeInfo
         {
             [SerializeField] private string _assemblFullName = string.Empty;
             public string AssemblFullName { get { return _assemblFullName; } }
@@ -40,7 +39,7 @@ namespace BaseGameLogic.Utilities
 
             public static implicit operator Type(TypeInfo stateInfo)
             {
-                if (stateInfo == null ||string.IsNullOrEmpty(stateInfo._assemblFullName) || string.IsNullOrEmpty(stateInfo._typeName))
+                if (stateInfo == null || string.IsNullOrEmpty(stateInfo._assemblFullName) || string.IsNullOrEmpty(stateInfo._typeName))
                     return null;
 
                 if (stateInfo._type == null)
@@ -53,8 +52,7 @@ namespace BaseGameLogic.Utilities
             }
         }
 
-        [Serializable]
-        public class ConstructorParameter
+        [Serializable] public class ConstructorParameter
         {
             [SerializeField] private string _parameterName = string.Empty;
             public string ParameterName { get { return _parameterName; } }
@@ -65,7 +63,6 @@ namespace BaseGameLogic.Utilities
                 get { return _type; }
                 set { _type = value; }
             }
-
 
             public UnityEngine.Object ObjectValue;
             public int IntValue = 0;
@@ -125,7 +122,7 @@ namespace BaseGameLogic.Utilities
         [SerializeField] private string _name = string.Empty;
         public string Name { get { return _name; } }
 
-        public ClassConstructor() {}
+        public ClassConstructor() { }
 
         public ClassConstructor(Type type)
         {
@@ -135,7 +132,7 @@ namespace BaseGameLogic.Utilities
         public ClassConstructor(ConstructorInfo info, Type type) : this(type)
         {
             _type = new TypeInfo(info.DeclaringType);
-            _name = string.Format("{0} (", info.DeclaringType);
+            _name = string.Format("{0} (", info.DeclaringType.Name);
 
             var parameters = info.GetParameters();
             _parameters = new ConstructorParameter[parameters.Length];
@@ -179,12 +176,12 @@ namespace BaseGameLogic.Utilities
             return GetHashCode() == obj.GetHashCode();
         }
 
-        public static bool operator !=(ClassConstructor a, ClassConstructor b)
+        public static bool operator != (ClassConstructor a, ClassConstructor b)
         {
             return !(a == b);
         }
 
-        public static bool operator ==(ClassConstructor a, ClassConstructor b)
+        public static bool operator == (ClassConstructor a, ClassConstructor b)
         {
             if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
                 return true;
