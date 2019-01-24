@@ -8,13 +8,29 @@ namespace BaseGameLogic.Utilities
     [Serializable] public class Index
     {
         [SerializeField] private int _current = 0;
-        public int Count = 0;
+        public int Current
+        {
+            get { return _current; }
+            set { _current = LoopIndex(value, Count); }
+        }
 
-        public Index() {}
+        private IList _linkedList = null;
+        private int _count = 0;
+        public int Count { get { return _linkedList != null ? _linkedList.Count : _count; } }
+
+        public int Next { get { return LoopIndex(_current + 1, Count); } }
+
+        public int Previous { get { return LoopIndex(_current - 1, Count); } }
+
+        public int Last { get { return Count - 1; } }
+
+        public bool IsLast { get { return _current == Count - 1; } }
+
+        public Index() { }
 
         public Index(int count)
         {
-            Count = count;
+            _count = count;
         }
 
         public Index(int current, int count) : this(count)
@@ -22,13 +38,24 @@ namespace BaseGameLogic.Utilities
             _current = current < 0 ? 0 : current > count ? count - 1 : current;
         }
 
-        public Index(IList list) : this (list.Count) {}
+        public Index(IList list)
+        {
+            _linkedList = list;
+        }
 
-        public Index(int current, IList list) : this(current, list.Count) {}
+        public Index(int current, IList list) : this(current, list.Count)
+        {
+            _linkedList = list;
+        }
 
         private void LoopIndex()
         {
-            _current = (_current + Count) % Count;
+            _current = LoopIndex(_current, Count);
+        }
+
+        private static int LoopIndex(int current, int count)
+        {
+            return (current + count) % count;
         }
 
         public static implicit operator int(Index i)
@@ -48,6 +75,11 @@ namespace BaseGameLogic.Utilities
             i._current--;
             i.LoopIndex();
             return i;
+        }
+
+        public int GetOffsetIndex(int offset)
+        {
+            return LoopIndex(_current + offset, Count);
         }
     }
 }
