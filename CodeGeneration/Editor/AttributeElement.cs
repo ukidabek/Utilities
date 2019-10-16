@@ -1,8 +1,12 @@
-﻿namespace Utilities.Editor
+﻿using System;
+
+namespace Utilities.Editor
 {
-	public abstract class AttributeElement : CSharpFileElement
+	public class AttributeElement : CSharpFileElement
 	{
 		protected AttributeElement(string name) : base(name) { }
+
+		public AttributeElement(Type type) : this(type.Name) { }
 
 		public virtual string Parameters { get => string.Empty; }
 

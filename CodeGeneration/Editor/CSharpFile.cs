@@ -6,6 +6,8 @@ namespace Utilities.Editor
 {
 	public partial class CSharpFile
 	{
+		public string Name = "CSharpFile";
+
 		public List<UsingElement> Usings = new List<UsingElement>();
 
 		public List<CSharpFileElement> cSharpFileElements = new List<CSharpFileElement>();
@@ -32,7 +34,8 @@ namespace Utilities.Editor
 
 		public virtual void Save(string path)
 		{
-			File.WriteAllText(string.Format("{0}/{1}.cs", path, "Test"), Generate());
+			if(!Directory.Exists(path)) Directory.CreateDirectory(path);
+			File.WriteAllText(string.Format("{0}/{1}.cs", path, Name), Generate());
 		}
 	}
 }

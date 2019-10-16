@@ -1,8 +1,12 @@
-﻿namespace Utilities.Editor
+﻿using System;
+
+namespace Utilities.Editor
 {
 	public class UsingElement : CSharpFileElement
 	{
 		public UsingElement(string usingPath) : base(usingPath) { }
+
+		public UsingElement(Type type) : base(type.Namespace) { }
 
 		public override string GenerateCode(int tabulatorsCount)
 		{
