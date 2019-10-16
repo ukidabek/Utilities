@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BaseGameLogic.Utilities
+namespace Utilities
 {
     [Serializable] public class Index
     {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace BaseGameLogic.Utilities.UI
+namespace Utilities.Events
 {
     public class FireEventOnAwake : MonoBehaviour
     {

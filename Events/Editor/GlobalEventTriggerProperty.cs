@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace BaseGameLogic.Utilities
+namespace Utilities.Events
 {
     [CustomPropertyDrawer(typeof(GlobalEventTrigger))]
     public class GlobalEventTriggerProperty : PropertyDrawer

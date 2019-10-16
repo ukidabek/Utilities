@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace BaseGameLogic.Utilities
+namespace Utilities.Events
 {
     public class GlobalEventsManager : MonoBehaviour
     {

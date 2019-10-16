@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace BaseGameLogic.Utilities
+namespace Utilities.Events
 {
     [Serializable] public class GlobalEventTrigger
     {

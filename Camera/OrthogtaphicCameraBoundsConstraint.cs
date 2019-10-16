@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BaseGameLogic.Utilities
+namespace Utilities
 {
     public class OrthogtaphicCameraBoundsConstraint
     {
