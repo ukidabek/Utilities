@@ -1,4 +1,4 @@
-﻿namespace Utilities.Editor
+﻿namespace Utilities.Editor.CodeGeneration
 {
 	public abstract class CSharpFileElement
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Utilities.Editor
+namespace Utilities.Editor.CodeGeneration
 {
 	public class UsingElement : CSharpFileElement
 	{

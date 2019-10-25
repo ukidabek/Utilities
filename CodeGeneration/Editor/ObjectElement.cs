@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Utilities.Editor
+namespace Utilities.Editor.CodeGeneration
 {
 	public abstract class ObjectElement : CSharpFileElement
 	{

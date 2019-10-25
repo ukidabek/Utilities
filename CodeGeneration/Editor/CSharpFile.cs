@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
-namespace Utilities.Editor
+namespace Utilities.Editor.CodeGeneration
 {
 	public partial class CSharpFile
 	{
