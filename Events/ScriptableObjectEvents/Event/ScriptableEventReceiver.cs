@@ -1,8 +1,11 @@
 using UnityEngine.Events;
 
-public class ScriptableEventReceiver : BaseScriptableEventReceiver
+namespace Utilities.Events
 {
-    public UnityEvent Callback = new UnityEvent();
+    public class ScriptableEventReceiver : BaseScriptableEventReceiver
+    {
+        public UnityEvent Callback = new UnityEvent();
 
-    public void Invoke() => Callback.Invoke();
+        public void Invoke() => Callback.Invoke();
+    }
 }

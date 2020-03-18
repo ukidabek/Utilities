@@ -1,16 +1,19 @@
 using UnityEngine;
 
-public abstract class BaseScriptableEventReceiver : MonoBehaviour
+namespace Utilities.Events
 {
-    [SerializeField] private BaseScriptableEvent m_event = null;
-    
-    private void OnEnable() => Register();
+    public abstract class BaseScriptableEventReceiver : MonoBehaviour
+    {
+        [SerializeField] private BaseScriptableEvent m_event = null;
 
-    private void OnDisable() => Unregister();
+        private void OnEnable() => Register();
 
-    private void OnDestroy() => Unregister();
+        private void OnDisable() => Unregister();
 
-    private void Register() => m_event?.RegisterReceiver(this);
+        private void OnDestroy() => Unregister();
 
-    private void Unregister() => m_event?.UnregisterReceiver(this);
+        private void Register() => m_event?.RegisterReceiver(this);
+
+        private void Unregister() => m_event?.UnregisterReceiver(this);
+    }
 }
