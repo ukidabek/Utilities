@@ -22,16 +22,16 @@ namespace Utilities.Events
         {
             void Call(T value);
         }
-        
-       
+
+
         protected abstract ICallback Callback { get; }
 
         public void Invoke(T value) => Callback.Call(value);
     }
-    
+
     public abstract class BaseScriptableEvent<T> : BaseScriptableEvent
     {
-
+        [SerializeField] private bool m_enableLogs = true;
         [SerializeField] List<BaseScriptableEventReceiver<T>> m_receivers = new List<BaseScriptableEventReceiver<T>>();
 
         public override void RegisterReceiver(BaseScriptableEventReceiver receiver)
@@ -46,6 +46,11 @@ namespace Utilities.Events
                 m_receivers.Remove(usableReceiver);
         }
 
-        public void Invoke(T value) => m_receivers.ForEach(receiver => receiver.Invoke(value));
+        public void Invoke(T value)
+        {
+            if (m_enableLogs)
+                Debug.Log($"Event <b>{name}</b> invoked! Value used is: {value.ToString()}.", this);
+            m_receivers.ForEach(receiver => receiver.Invoke(value));
+        }
     }
 }
