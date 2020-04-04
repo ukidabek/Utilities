@@ -16,16 +16,11 @@ namespace Utilities.Values
         private SerializedProperty m_value = null;
         private SerializedProperty m_useReference = null;
 
-        private GUIStyle m_popupStyle = null;
-
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             m_reference = property.FindPropertyRelative("m_reference");
             m_value = property.FindPropertyRelative("m_value");
             m_useReference = property.FindPropertyRelative("m_useReference");
-
-            m_popupStyle = new GUIStyle(GUI.skin.GetStyle("PaneOptions"));
-            m_popupStyle.imagePosition = ImagePosition.ImageOnly;
 
             return base.GetPropertyHeight(property, label);
         }
@@ -35,13 +30,15 @@ namespace Utilities.Values
             label = EditorGUI.BeginProperty(position, label, property);
             position = EditorGUI.PrefixLabel(position, label);
 
-            Rect buttonRect = new Rect(position);
-            buttonRect.yMin += m_popupStyle.margin.top;
-            buttonRect.width = m_popupStyle.fixedWidth + m_popupStyle.margin.right;
-            position.xMin = buttonRect.xMax;
+            position.x -= 15 * EditorGUI.indentLevel;
+
+            Rect buttonRect = new Rect(position) {width = 135};
+
+            position.x = buttonRect.x + buttonRect.width - 15 * EditorGUI.indentLevel;
+            position.width -= buttonRect.width - 15 * EditorGUI.indentLevel;
 
             int result = m_useReference.boolValue ? 0 : 1;
-            result = EditorGUI.Popup(buttonRect, result, m_popupOptions, m_popupStyle);
+            result = EditorGUI.Popup(buttonRect, result, m_popupOptions);
             m_useReference.boolValue = result == 0;
 
             EditorGUI.PropertyField(position,

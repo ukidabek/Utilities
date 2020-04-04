@@ -35,9 +35,4 @@ namespace Utilities.Values
 
         public static implicit operator T(BaseValue<T> value) => value.m_value;
     }
-
-    [CreateAssetMenu(menuName = "Values/Int")]
-    public class IntValue : BaseValue<int>
-    {
-    }
 }

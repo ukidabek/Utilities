@@ -28,6 +28,6 @@ namespace Utilities.Values
             }
         }
 
-        public static implicit operator T1(BaseValueReference<T, T1> value) => value.m_value;
+        public static implicit operator T1(BaseValueReference<T, T1> value) => value.Value;
     }
 }
