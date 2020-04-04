@@ -32,6 +32,7 @@ namespace Utilities.Events
     public abstract class BaseScriptableEvent<T> : BaseScriptableEvent
     {
         [SerializeField] private bool m_enableLogs = true;
+        [SerializeField] private Color m_logColor = Color.white;
         [SerializeField] List<BaseScriptableEventReceiver<T>> m_receivers = new List<BaseScriptableEventReceiver<T>>();
 
         public override void RegisterReceiver(BaseScriptableEventReceiver receiver)
@@ -49,7 +50,10 @@ namespace Utilities.Events
         public void Invoke(T value)
         {
             if (m_enableLogs)
-                Debug.Log($"Event <b>{name}</b> invoked! Value used is: {value.ToString()}.", this);
+            {
+                var colorHexValue = ColorUtility.ToHtmlStringRGB(m_logColor);  
+                Debug.Log($"Event <color=#{colorHexValue}><b>{name}</b></color> invoked! Value used is: <color=#{colorHexValue}>{value.ToString()}</color>.", this);
+            }
             m_receivers.ForEach(receiver => receiver.Invoke(value));
         }
     }
