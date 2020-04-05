@@ -6,12 +6,12 @@ using UnityEngine.Events;
 
 namespace Utilities.Events
 {
-    public class StringScriptableEventReceiver : BaseScriptableEventReceiver<string>
+    public class IntScriptableEventReceiver : BaseScriptableEventReceiver<int>
     {
         [Serializable]
-        public class ReceiverEventHandlerCallback : UnityEvent<string>, ICallback
+        public class ReceiverEventHandlerCallback : UnityEvent<int>, ICallback
         {
-            public void Call(string value) => Invoke(value);
+            public void Call(int value) => Invoke(value);
         }
 
         public ReceiverEventHandlerCallback Event = new ReceiverEventHandlerCallback();

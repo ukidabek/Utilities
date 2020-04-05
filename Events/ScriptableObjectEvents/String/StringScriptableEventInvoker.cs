@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Utilities.Events
 {
-
     public class StringScriptableEventInvoker : BaseScriptableEventInvoker<string>
     {
         [SerializeField] private StringScriptableEvent m_event = null;
