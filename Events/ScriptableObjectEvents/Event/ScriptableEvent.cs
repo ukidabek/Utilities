@@ -8,8 +8,17 @@ namespace Utilities.Events
     public class ScriptableEvent : BaseScriptableEvent
     {
         private List<ScriptableEventReceiver> m_receivers = new List<ScriptableEventReceiver>();
-        public void Invoke() => m_receivers.ForEach(receiver => receiver.Invoke());
-        
+
+        public void Invoke()
+        {
+            if (m_enableLogs)
+            {
+                var colorHexValue = ColorUtility.ToHtmlStringRGB(m_logColor);  
+                Debug.Log($"Event <color=#{colorHexValue}><b>{name}</b></color> invoked!.", this);
+            }
+            m_receivers.ForEach(receiver => receiver.Invoke());
+        }
+
         public override void RegisterReceiver(BaseScriptableEventReceiver receiver)
         {
             if (receiver != null && receiver is ScriptableEventReceiver handlerReceiver &&

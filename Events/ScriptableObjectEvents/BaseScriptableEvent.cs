@@ -8,6 +8,9 @@ namespace Utilities.Events
 {
     public abstract class BaseScriptableEvent : ScriptableObject
     {
+        [SerializeField] protected bool m_enableLogs = true;
+        [SerializeField] protected Color m_logColor = Color.white;
+
 #if UNITY_EDITOR
         [SerializeField, TextArea(5, 10)] private string m_Description = string.Empty;
 #endif
@@ -31,9 +34,7 @@ namespace Utilities.Events
 
     public abstract class BaseScriptableEvent<T> : BaseScriptableEvent
     {
-        [SerializeField] private bool m_enableLogs = true;
-        [SerializeField] private Color m_logColor = Color.white;
-        [SerializeField] List<BaseScriptableEventReceiver<T>> m_receivers = new List<BaseScriptableEventReceiver<T>>();
+        [SerializeField] protected List<BaseScriptableEventReceiver<T>> m_receivers = new List<BaseScriptableEventReceiver<T>>();
 
         public override void RegisterReceiver(BaseScriptableEventReceiver receiver)
         {
