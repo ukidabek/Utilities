@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
+
+namespace Utilities.Events
+{
+    public class SpriteScriptableEventReceiver : BaseScriptableEventReceiver<Sprite>
+    {
+        [Serializable]
+        public class ReceiverEventHandlerCallback : UnityEvent<Sprite>, ICallback
+        {
+            public void Call(Sprite value) => Invoke(value);
+        }
+
+        public ReceiverEventHandlerCallback Event = new ReceiverEventHandlerCallback();
+        protected override ICallback Callback => Event;
+    }
+}
