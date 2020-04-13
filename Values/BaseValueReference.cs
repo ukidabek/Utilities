@@ -8,15 +8,13 @@ namespace Utilities.Values
 {
     public abstract class BaseValueReference
     {
-        
     }
     
     public abstract class BaseValueReference<T, T1> : BaseValueReference where T : BaseValue
     {
         [SerializeField] private bool m_useReference = false;
-        [SerializeField] private T m_reference;
-        [SerializeField] private T1 m_value;
-
+        [SerializeField] private T m_reference = default;
+        [SerializeField] private T1 m_value = default;
         public T1 Value
         {
             get

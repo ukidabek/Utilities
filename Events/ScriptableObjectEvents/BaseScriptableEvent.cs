@@ -8,11 +8,13 @@ namespace Utilities.Events
 {
     public abstract class BaseScriptableEvent : ScriptableObject
     {
-        [SerializeField] protected bool m_enableLogs = true;
+        [Header("Logging")] [SerializeField] protected bool m_enableLogs = true;
+        [SerializeField] protected bool m_enableDetailedLogs = false;
         [SerializeField] protected Color m_logColor = Color.white;
 
 #if UNITY_EDITOR
-        [SerializeField, TextArea(5, 10)] private string m_Description = string.Empty;
+        [Space, SerializeField, TextArea(5, 10)]
+        private string m_Description = string.Empty;
 #endif
         public abstract void RegisterReceiver(BaseScriptableEventReceiver receiver);
 
@@ -26,7 +28,6 @@ namespace Utilities.Events
             void Call(T value);
         }
 
-
         protected abstract ICallback Callback { get; }
 
         public void Invoke(T value) => Callback.Call(value);
@@ -34,7 +35,8 @@ namespace Utilities.Events
 
     public abstract class BaseScriptableEvent<T> : BaseScriptableEvent
     {
-        [SerializeField] protected List<BaseScriptableEventReceiver<T>> m_receivers = new List<BaseScriptableEventReceiver<T>>();
+        [SerializeField]
+        protected List<BaseScriptableEventReceiver<T>> m_receivers = new List<BaseScriptableEventReceiver<T>>();
 
         public override void RegisterReceiver(BaseScriptableEventReceiver receiver)
         {
@@ -50,12 +52,37 @@ namespace Utilities.Events
 
         public void Invoke(T value)
         {
+            var colorHexValue = string.Empty;
             if (m_enableLogs)
             {
-                var colorHexValue = ColorUtility.ToHtmlStringRGB(m_logColor);  
-                Debug.Log($"Event <color=#{colorHexValue}><b>{name}</b></color> invoked! Value used is: <color=#{colorHexValue}>{value.ToString()}</color>.", this);
+                colorHexValue = ColorUtility.ToHtmlStringRGB(m_logColor);
+                Debug.Log(
+                    $"Event <color=#{colorHexValue}><b>{name}</b></color> invoked! Value used is: <color=#{colorHexValue}>{ValueToString(value)}</color>.",
+                    this);
             }
-            m_receivers.ForEach(receiver => receiver.Invoke(value));
+
+            m_receivers.ForEach(receiver =>
+            {
+                if (m_enableLogs && m_enableDetailedLogs)
+                    Debug.Log(
+                        $"Invoke event on receiver attached to <color=#{colorHexValue}><b>{receiver.name}</b></color>.");
+                receiver.Invoke(value);
+            });
+        }
+
+        private static string ValueToString(T value)
+        {
+            var valueToDisplay = string.Empty;
+            try
+            {
+                valueToDisplay = value.ToString();
+            }
+            catch (NullReferenceException)
+            {
+                valueToDisplay = "null";
+            }
+
+            return valueToDisplay;
         }
     }
 }

@@ -7,16 +7,22 @@ namespace Utilities.Events
     [CreateAssetMenu(fileName = "ScriptableEvent", menuName = "ScriptableEvent/New ScriptableEvent")]
     public class ScriptableEvent : BaseScriptableEvent
     {
-        private List<ScriptableEventReceiver> m_receivers = new List<ScriptableEventReceiver>();
+       [SerializeField] private List<ScriptableEventReceiver> m_receivers = new List<ScriptableEventReceiver>();
 
         public void Invoke()
         {
+            var colorHexValue = string.Empty;
             if (m_enableLogs)
             {
-                var colorHexValue = ColorUtility.ToHtmlStringRGB(m_logColor);  
+                colorHexValue = ColorUtility.ToHtmlStringRGB(m_logColor);  
                 Debug.Log($"Event <color=#{colorHexValue}><b>{name}</b></color> invoked!.", this);
             }
-            m_receivers.ForEach(receiver => receiver.Invoke());
+            m_receivers.ForEach(receiver =>
+            {
+                if(m_enableLogs && m_enableDetailedLogs)
+                    Debug.Log($"Invoke event on receiver attached to <color=#{colorHexValue}><b>{receiver.name}</b></color>.");
+                receiver.Invoke();
+            });
         }
 
         public override void RegisterReceiver(BaseScriptableEventReceiver receiver)

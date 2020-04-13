@@ -5,11 +5,11 @@ namespace Utilities.Events
 {
     public abstract class BaseScriptableEventInvoker : MonoBehaviour
     {
-        [SerializeField] private bool m_invokeOnAwake = false;
+        [SerializeField] private bool m_invokeOnStart = false;
 
-        private void Awake()
+        protected virtual void Start()
         {
-            if (m_invokeOnAwake)
+            if (m_invokeOnStart)
                 InvokeOnAwake();
         }
 
