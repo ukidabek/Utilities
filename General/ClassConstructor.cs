@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace BaseGameLogic.Utilities
+namespace Utilities.General
 {
     /// <summary>
     /// Experimental class.

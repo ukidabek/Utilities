@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Utilities
+namespace Utilities.General
 {
     [CustomPropertyDrawer(typeof(Index))]
     public class IndexProperty : PropertyDrawer

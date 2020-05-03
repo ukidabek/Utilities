@@ -19,7 +19,7 @@ namespace Utilities.Events
         public override void OnInspectorGUI()
         {
             var oldColor = GUI.backgroundColor;
-            GUI.backgroundColor = eventReciver.Event.LogColor;
+            GUI.backgroundColor = eventReciver.Event != null ? eventReciver.Event.LogColor : oldColor;
             base.OnInspectorGUI();
             GUI.backgroundColor = oldColor;
         }

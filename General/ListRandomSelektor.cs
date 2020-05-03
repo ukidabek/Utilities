@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace BaseGameLogic.Utilities
+namespace Utilities.General
 {
     public class ListRandomSelektor
     {

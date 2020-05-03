@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BaseGameLogic.Utilities
+namespace Utilities.General
 {
     public class Latch
     {

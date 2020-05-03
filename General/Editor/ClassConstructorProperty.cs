@@ -6,7 +6,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace BaseGameLogic.Utilities
+namespace Utilities.General
 {
     [CustomPropertyDrawer(typeof(ClassConstructor))]
     public class ClassInfoProperty : PropertyDrawer

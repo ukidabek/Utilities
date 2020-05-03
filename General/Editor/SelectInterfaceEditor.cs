@@ -5,7 +5,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace BaseGameLogic.Utilities
+namespace Utilities.General
 {
     public class SelectInterfaceEditor : EditorWindow
     {

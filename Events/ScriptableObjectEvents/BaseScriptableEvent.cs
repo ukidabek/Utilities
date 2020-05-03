@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
+using Unity.Collections;
 using UnityEngine;
-using UnityEngine.Events;
+using Utilities.General;
 
 namespace Utilities.Events
 {
@@ -30,10 +30,12 @@ namespace Utilities.Events
         {
             void Call(T value);
         }
+        
+        [General.ReadOnly, SerializeField] private T m_value = default(T);
 
         protected abstract ICallback Callback { get; }
 
-        public void Invoke(T value) => Callback.Call(value);
+        public void Invoke(T value) => Callback.Call(m_value = value);
     }
 
     public abstract class BaseScriptableEvent<T> : BaseScriptableEvent
