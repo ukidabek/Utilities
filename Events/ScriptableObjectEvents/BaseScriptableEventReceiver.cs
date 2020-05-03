@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Utilities.Events
@@ -5,6 +6,8 @@ namespace Utilities.Events
     public abstract class BaseScriptableEventReceiver : MonoBehaviour
     {
         [SerializeField] private BaseScriptableEvent m_event = null;
+        public BaseScriptableEvent Event => m_event;
+
         private string EventName => (m_event ? m_event.name : "null");
 
         private void OnEnable() => Register();
