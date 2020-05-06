@@ -2,50 +2,61 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace BaseGameLogic.Utilities.UI
 {
-    [RequireComponent(typeof(RectTransform))]
     public class UIPanelMover : MonoBehaviour
     {
+        [Serializable]
+        public class OnMoveCallback : UnityEvent<float>
+        {
+        }
+        
         public enum Status
         {
             Open,
             Close
         }
 
+        [SerializeField] private RectTransform m_rectTransform = null;
         [SerializeField] private Status m_status = Status.Close;
         [SerializeField] private Vector2 m_openPosition = Vector2.zero;
         [SerializeField] private Vector2 m_closePosition = Vector2.zero;
         [SerializeField] private float m_speed = 5f;
         [SerializeField] private float value = 0f;
-        private Coroutine coroutine = null;
-        private RectTransform rectTransform;
-
+     
+        [Space]
         private float openClosePositionDistance = 0f;
+        public OnMoveCallback OnMove = new OnMoveCallback();
+        
+        private Coroutine coroutine = null;
+
 
         private void Awake()
         {
             openClosePositionDistance = Vector2.Distance(m_openPosition, m_closePosition);
-            rectTransform = transform as RectTransform;
+            if (m_rectTransform == null && transform is RectTransform rectTransform)
+                m_rectTransform = rectTransform;
+            
             switch (m_status)
             {
                 case Status.Open:
-                    rectTransform.anchoredPosition = m_openPosition;
+                    m_rectTransform.anchoredPosition = m_openPosition;
                     break;
                 case Status.Close:
-                    rectTransform.anchoredPosition = m_closePosition;
+                    m_rectTransform.anchoredPosition = m_closePosition;
                     break;
             }
         }
 
         private IEnumerator MoveCoroutine(Vector2 position)
         {
-            while (rectTransform.anchoredPosition != position)
+            while (m_rectTransform.anchoredPosition != position)
             {
-                rectTransform.anchoredPosition = Vector2.MoveTowards(rectTransform.anchoredPosition, position, m_speed);
-                var distance = Vector2.Distance(rectTransform.anchoredPosition, position);
-                value = 1 - (distance / openClosePositionDistance);
+                m_rectTransform.anchoredPosition = Vector2.MoveTowards(m_rectTransform.anchoredPosition, position, m_speed);
+                var distance = Vector2.Distance(m_rectTransform.anchoredPosition, position);
+                OnMove.Invoke(value = 1 - distance / openClosePositionDistance);
                 yield return null;
             }
 
