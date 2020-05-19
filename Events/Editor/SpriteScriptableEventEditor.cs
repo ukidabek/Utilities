@@ -23,7 +23,7 @@ namespace Utilities.Events
             EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
             EditorGUILayout.LabelField("Receivers list:");
             foreach (var receiver in m_scriptableEvent.Receivers)
-                EditorGUILayout.ObjectField("", receiver, typeof(BaseScriptableEventReceiver));
+                EditorGUILayout.ObjectField("", receiver, typeof(BaseScriptableEventReceiver), true);
         }
     }
 }

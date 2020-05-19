@@ -14,7 +14,7 @@ namespace Utilities.Events
             public void Call(string value) => Invoke(value);
         }
 
-        public ReceiverEventHandlerCallback Event = new ReceiverEventHandlerCallback();
+        public new ReceiverEventHandlerCallback Event = new ReceiverEventHandlerCallback();
         protected override ICallback Callback => Event;
     }
 }
