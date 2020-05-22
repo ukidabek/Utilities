@@ -35,7 +35,7 @@ namespace Utilities.General
             T instance = null;
             for (int i = 0; i < List.Count; i++)
             {
-                if (!instance.gameObject.activeSelf)
+                if (!List[i].gameObject.activeSelf)
                 {
                     instance = List[i];
                     List.RemoveAt(i);
