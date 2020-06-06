@@ -1,16 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Utilities.General
 {
+    [Serializable]
     public class Pool<T> where T : Component
     {
         [SerializeField] private T prefab = null;
         [SerializeField] private Transform parrent = null;
         [SerializeField] private int maxCount = -1;
 
-        private List<T> List = new List<T>();
+        private List<T> list = new List<T>();
 
         public Pool(T prefab, Transform parrent, int initialCount = 5, int maxCount = -1)
         {
@@ -26,25 +28,31 @@ namespace Utilities.General
         {
             T instance = GameObject.Instantiate(prefab, parrent, false);
             instance.gameObject.SetActive(false);
-            List.Add(instance);
+            list.Add(instance);
             return instance;
         }
 
         public T Get()
         {
             T instance = null;
-            for (int i = 0; i < List.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (!List[i].gameObject.activeSelf)
+                if (!list[i].gameObject.activeSelf)
                 {
-                    instance = List[i];
-                    List.RemoveAt(i);
-                    List.Add(instance);
+                    instance = list[i];
+                    list.RemoveAt(i);
+                    list.Add(instance);
                     break;
                 }
             }
 
             return instance == null ? CreateNewInstance() : instance;
+        }
+
+        public void DeactivateAllObjects()
+        {
+            foreach (var component in list)
+                component.gameObject.SetActive(false);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace BaseGameLogic.Utilities.UI
+namespace Utilities.General.UI
 {
     public class UIPanelMover : MonoBehaviour
     {

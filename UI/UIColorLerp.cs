@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace BaseGameLogic.Utilities.UI
+namespace Utilities.General.UI
 {
     public class UIColorLerp : MonoBehaviour
     {
