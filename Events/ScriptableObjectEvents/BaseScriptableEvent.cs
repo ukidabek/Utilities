@@ -18,7 +18,7 @@ namespace Utilities.Events
         private string m_Description = string.Empty;
 #endif
         public abstract List<BaseScriptableEventReceiver> Receivers { get; }
-
+        
         public abstract void RegisterReceiver(BaseScriptableEventReceiver receiver);
 
         public abstract void UnregisterReceiver(BaseScriptableEventReceiver receiver);
