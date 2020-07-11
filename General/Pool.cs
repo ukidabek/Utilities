@@ -14,6 +14,10 @@ namespace Utilities.General
 
         private List<T> list = new List<T>();
 
+        public Action<T> OnPoolElementSelected = null;
+        public Action<T> OnPoolElementCreated = null;
+        public Action<T> OnPoolElementDisabled = null;
+
         public Pool(T prefab, Transform parrent, int initialCount = 5, int maxCount = -1)
         {
             this.prefab = prefab;
@@ -29,6 +33,7 @@ namespace Utilities.General
             T instance = GameObject.Instantiate(prefab, parrent, false);
             instance.gameObject.SetActive(false);
             list.Add(instance);
+            OnPoolElementCreated?.Invoke(instance);
             return instance;
         }
 
@@ -45,14 +50,19 @@ namespace Utilities.General
                     break;
                 }
             }
-
-            return instance == null ? CreateNewInstance() : instance;
+            instance = instance == null ? CreateNewInstance() : instance;
+            OnPoolElementSelected?.Invoke(instance);
+            return instance;
         }
 
         public void DeactivateAllObjects()
         {
             foreach (var component in list)
+            {
+                OnPoolElementDisabled?.Invoke(component);
                 component.gameObject.SetActive(false);
+            }
+               
         }
     }
 }

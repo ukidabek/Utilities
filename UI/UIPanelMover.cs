@@ -32,6 +32,7 @@ namespace Utilities.General.UI
         
         private Coroutine coroutine = null;
 
+        private void OnEnable() {}
 
         private void Awake()
         {
@@ -65,6 +66,7 @@ namespace Utilities.General.UI
 
         private void HandleCoroutine(Vector2 position)
         {
+            if(!enabled) return;
             if (coroutine != null)
                 StopCoroutine(coroutine);
             coroutine = StartCoroutine(MoveCoroutine(position));
