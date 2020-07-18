@@ -26,7 +26,9 @@ namespace Utilities.Events
     {
         [SerializeField] private T m_defaultValue = default(T);
 
-        protected override void InvokeOnAwake() => Invoke(m_defaultValue);
+        protected override void InvokeOnAwake() => Invoke();
+
+        public virtual void Invoke() => Invoke(m_defaultValue);
 
         public abstract void Invoke(T value);
     }
