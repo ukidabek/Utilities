@@ -15,8 +15,9 @@ namespace Utilities.General
         }
 
         private IList _linkedList = null;
+        
         private int _count = 0;
-        public int Count { get { return _linkedList != null ? _linkedList.Count : _count; } }
+        public int Count { get { return _linkedList?.Count ?? _count; } }
 
         public int Next { get { return LoopIndex(_current + 1, Count); } }
 
@@ -60,20 +61,32 @@ namespace Utilities.General
 
         public static implicit operator int(Index i)
         {
-            return i._current;
+            return i.Current;
         }
 
         public static Index operator ++(Index i)
         {
-            i._current++;
+            i.Current++;
             i.LoopIndex();
             return i;
         }
 
         public static Index operator --(Index i)
         {
-            i._current--;
+            i.Current--;
             i.LoopIndex();
+            return i;
+        }
+
+        public static Index operator +(Index i, int x)
+        {
+            i.Current += x;
+            return i;
+        }
+
+        public static Index operator -(Index i, int x)
+        {
+            i.Current -= x;
             return i;
         }
 

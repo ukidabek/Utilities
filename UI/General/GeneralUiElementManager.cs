@@ -24,7 +24,8 @@ namespace Utilities.General.UI
     public abstract class GeneralUiElementManager<T> : GeneralUiElementManager where T : Selectable
     {
         [SerializeField] protected T m_selectable = null;
-
+        public T Selectable => m_selectable;
+        
         public override bool Interactable
         {
             get => m_selectable.interactable;
