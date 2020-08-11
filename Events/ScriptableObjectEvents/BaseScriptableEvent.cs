@@ -71,23 +71,16 @@ namespace Utilities.Events
 
             if(methodInfo != null && m_receiverHolders.All(holder => holder.Receiver != receiver))
                 m_receiverHolders.Add(new ReceiverHolder(receiver, methodInfo));
-            
-            // if (receiver is BaseScriptableEventReceiver<T, BaseScriptableEvent<T>> usableReceiver && !m_receivers.Contains(usableReceiver))
-            //     m_receivers.Add(usableReceiver);
         }
 
         public override void UnregisterReceiver(BaseScriptableEventReceiver receiver)
         {
             var receiverHolder = m_receiverHolders.FirstOrDefault(holder => holder.Receiver == receiver);
             m_receiverHolders.Remove(receiverHolder);
-            // if (receiver is BaseScriptableEventReceiver<T, BaseScriptableEvent<T>> usableReceiver && m_receivers.Contains(usableReceiver))
-            //     m_receivers.Remove(usableReceiver);
         }
 
         public void Invoke(T value)
         {
-            if(!Enabled) return;
-            
             var colorHexValue = string.Empty;
             if (m_enableLogs)
             {
@@ -95,16 +88,12 @@ namespace Utilities.Events
                 Debug.Log(
                     $"Event <color=#{colorHexValue}><b>{name}</b></color> invoked! Value used is: <color=#{colorHexValue}>{ValueToString(value)}</color>.",
                     this);
+                if(!Enabled)
+                    Debug.Log($"Event <color=#{colorHexValue}><b>{name}</b></color> is disabled!</color>.", this);
             }
             
-            // m_receivers.ForEach(receiver =>
-            // {
-            //     if (m_enableLogs && m_enableDetailedLogs)
-            //         Debug.Log(
-            //             $"Invoke event on receiver attached to <color=#{colorHexValue}><b>{receiver.name}</b></color>.");
-            //     receiver.Invoke(value);
-            // });
-
+            if(!Enabled) return;
+            
             m_receiverHolders.ForEach(receiverHolder =>
             {
                 if (m_enableLogs && m_enableDetailedLogs)
