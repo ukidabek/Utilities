@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Utilities.Events
 {
-    public class CameraScriptableEventReceiver : BaseScriptableEventReceiver<Camera>
+    public class CameraScriptableEventReceiver : BaseScriptableEventReceiver<Camera, CameraScriptableEvent>
     {
         [Serializable]
         public class ReceiverEventHandlerCallback : UnityEvent<Camera>, ICallback

@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Utilities.Events
 {
-    public class StringScriptableEventReceiver : BaseScriptableEventReceiver<string>
+    public class StringScriptableEventReceiver : BaseScriptableEventReceiver<string, StringScriptableEvent>
     {
         [Serializable]
         public class ReceiverEventHandlerCallback : UnityEvent<string>, ICallback

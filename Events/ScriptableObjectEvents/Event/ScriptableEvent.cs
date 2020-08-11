@@ -15,6 +15,8 @@ namespace Utilities.Events
 
         public void Invoke()
         {
+            if(!Enabled) return;
+            
             var colorHexValue = string.Empty;
             if (m_enableLogs)
             {

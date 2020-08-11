@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Utilities.Events
 {
-    public class RectScriptableEventReceiver : BaseScriptableEventReceiver<Rect>
+    public class RectScriptableEventReceiver : BaseScriptableEventReceiver<Rect, RectScriptableEvent>
     {
         [Serializable]
         public class ReceiverEventHandlerCallback : UnityEvent<Rect>, ICallback
@@ -15,5 +15,7 @@ namespace Utilities.Events
         }
 
         public new ReceiverEventHandlerCallback Event = new ReceiverEventHandlerCallback();
-        protected override ICallback Callback => Event;    }
+        protected override ICallback Callback => Event;
+        
+    }
 }

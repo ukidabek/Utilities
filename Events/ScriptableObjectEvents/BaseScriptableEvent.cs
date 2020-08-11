@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using Unity.Collections;
 using UnityEngine;
 using Utilities.General;
@@ -9,6 +11,13 @@ namespace Utilities.Events
 {
     public abstract class BaseScriptableEvent : ScriptableObject
     {
+        [SerializeField] protected bool m_enabled = true;
+        public bool Enabled
+        {
+            get => m_enabled;
+            set => m_enabled = value;
+        }
+
         [Header("Logging")] [SerializeField] protected bool m_enableLogs = true;
         [SerializeField] protected bool m_enableDetailedLogs = false;
         [SerializeField] protected Color m_logColor = Color.white;
@@ -24,41 +33,61 @@ namespace Utilities.Events
         public abstract void UnregisterReceiver(BaseScriptableEventReceiver receiver);
     }
 
-    public abstract class BaseScriptableEventReceiver<T> : BaseScriptableEventReceiver
-    {
-        protected interface ICallback
-        {
-            void Call(T value);
-        }
-        
-        [General.ReadOnly, SerializeField] private T m_value = default(T);
-
-        protected abstract ICallback Callback { get; }
-
-        public void Invoke(T value) => Callback.Call(m_value = value);
-    }
-
     public abstract class BaseScriptableEvent<T> : BaseScriptableEvent
     {
-        protected List<BaseScriptableEventReceiver<T>> m_receivers = new List<BaseScriptableEventReceiver<T>>();
+        public class ReceiverHolder
+        {
+            public readonly BaseScriptableEventReceiver Receiver = null;
+            public readonly MethodInfo MethodInfo = null;
+            public string Name => Receiver.name;
+            
+            public ReceiverHolder(BaseScriptableEventReceiver receiver, MethodInfo methodInfo)
+            {
+                Receiver = receiver;
+                MethodInfo = methodInfo;
+            }
+
+            public void Invoke(object data) => MethodInfo.Invoke(Receiver, new[] {data});
+        }
+        
+        protected List<ReceiverHolder> m_receiverHolders = new List<ReceiverHolder>();
+        
+        protected List<BaseScriptableEventReceiver<T, BaseScriptableEvent<T>>> m_receivers = new List<BaseScriptableEventReceiver<T, BaseScriptableEvent<T>>>();
 
         public override List<BaseScriptableEventReceiver> Receivers =>
             new List<BaseScriptableEventReceiver>(m_receivers);
 
         public override void RegisterReceiver(BaseScriptableEventReceiver receiver)
         {
-            if (receiver is BaseScriptableEventReceiver<T> usableReceiver && !m_receivers.Contains(usableReceiver))
-                m_receivers.Add(usableReceiver);
+            var methodInfo = receiver
+                .GetType()
+                .GetMethods()
+                .FirstOrDefault(info =>
+                {
+                    var parameters = info.GetParameters()
+                        .Any(parameterInfo => parameterInfo.ParameterType == typeof(T));
+                    return info.Name == "Invoke" && parameters;
+                });
+
+            if(methodInfo != null && m_receiverHolders.All(holder => holder.Receiver != receiver))
+                m_receiverHolders.Add(new ReceiverHolder(receiver, methodInfo));
+            
+            // if (receiver is BaseScriptableEventReceiver<T, BaseScriptableEvent<T>> usableReceiver && !m_receivers.Contains(usableReceiver))
+            //     m_receivers.Add(usableReceiver);
         }
 
         public override void UnregisterReceiver(BaseScriptableEventReceiver receiver)
         {
-            if (receiver is BaseScriptableEventReceiver<T> usableReceiver && m_receivers.Contains(usableReceiver))
-                m_receivers.Remove(usableReceiver);
+            var receiverHolder = m_receiverHolders.FirstOrDefault(holder => holder.Receiver == receiver);
+            m_receiverHolders.Remove(receiverHolder);
+            // if (receiver is BaseScriptableEventReceiver<T, BaseScriptableEvent<T>> usableReceiver && m_receivers.Contains(usableReceiver))
+            //     m_receivers.Remove(usableReceiver);
         }
 
         public void Invoke(T value)
         {
+            if(!Enabled) return;
+            
             var colorHexValue = string.Empty;
             if (m_enableLogs)
             {
@@ -67,13 +96,21 @@ namespace Utilities.Events
                     $"Event <color=#{colorHexValue}><b>{name}</b></color> invoked! Value used is: <color=#{colorHexValue}>{ValueToString(value)}</color>.",
                     this);
             }
+            
+            // m_receivers.ForEach(receiver =>
+            // {
+            //     if (m_enableLogs && m_enableDetailedLogs)
+            //         Debug.Log(
+            //             $"Invoke event on receiver attached to <color=#{colorHexValue}><b>{receiver.name}</b></color>.");
+            //     receiver.Invoke(value);
+            // });
 
-            m_receivers.ForEach(receiver =>
+            m_receiverHolders.ForEach(receiverHolder =>
             {
                 if (m_enableLogs && m_enableDetailedLogs)
                     Debug.Log(
-                        $"Invoke event on receiver attached to <color=#{colorHexValue}><b>{receiver.name}</b></color>.");
-                receiver.Invoke(value);
+                        $"Invoke event on receiver attached to <color=#{colorHexValue}><b>{receiverHolder.Name}</b></color>.");
+                receiverHolder.Invoke(value);
             });
         }
 

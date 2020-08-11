@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Utilities.Events
 {
-    public class BoundsScriptableEventReceiver :  BaseScriptableEventReceiver<Bounds>
+    public class BoundsScriptableEventReceiver :  BaseScriptableEventReceiver<Bounds, BoundsScriptableEvent>
     {
         [Serializable]
         public class ReceiverEventHandlerCallback : UnityEvent<Bounds>, ICallback

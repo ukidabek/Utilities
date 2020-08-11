@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Utilities.Events
 {
-    public class Vector2ScriptableReceiver : BaseScriptableEventReceiver<Vector2>
+    public class Vector2ScriptableReceiver : BaseScriptableEventReceiver<Vector2, Vector2ScriptableEvent>
     {
         [Serializable]
         public class ReceiverEventHandlerCallback : UnityEvent<Vector2>, ICallback

@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace Utilities.Events
 {
-    public class FloatScriptableEventReceiver : BaseScriptableEventReceiver<float>
+    public class FloatScriptableEventReceiver : BaseScriptableEventReceiver<float,FloatScriptableEvent>
     {
         [Serializable]
         public class ReceiverEventHandlerCallback : UnityEvent<float>, ICallback
