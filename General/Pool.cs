@@ -14,11 +14,17 @@ namespace Utilities.General
 
         private List<T> list = new List<T>();
 
+        public Func<T, bool> ValidateIfPoolElementActive = null;
         public Action<T> OnPoolElementSelected = null;
         public Action<T> OnPoolElementCreated = null;
         public Action<T> OnPoolElementDisabled = null;
 
-        public Pool(T prefab, Transform parrent, int initialCount = 5, int maxCount = -1)
+        private Pool()
+        {
+            ValidateIfPoolElementActive = component => !component.gameObject.activeSelf;
+        }
+        
+        public Pool(T prefab, Transform parrent, int initialCount = 5, int maxCount = -1) : this()
         {
             this.prefab = prefab;
             this.parrent = parrent;
@@ -42,7 +48,7 @@ namespace Utilities.General
             T instance = null;
             for (int i = 0; i < list.Count; i++)
             {
-                if (!list[i].gameObject.activeSelf)
+                if (ValidateIfPoolElementActive.Invoke(list[i]))
                 {
                     instance = list[i];
                     list.RemoveAt(i);
@@ -62,7 +68,6 @@ namespace Utilities.General
                 OnPoolElementDisabled?.Invoke(component);
                 component.gameObject.SetActive(false);
             }
-               
         }
     }
 }
