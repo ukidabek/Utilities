@@ -1,24 +1,31 @@
-using System;
-using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Utilities.Events
 {
     public abstract class BaseScriptableEventReceiver : MonoBehaviour
     {
-        //[SerializeField] private BaseScriptableEvent m_event = null;
         public abstract BaseScriptableEvent Event { get; }
 
-        private string EventName => (Event ? Event.name : "null");
+        private string EventName => Event ? Event.name : "null";
 
-        private void OnEnable() => Register();
+        [SerializeField] private bool m_registerOnEnable = true;
+        [SerializeField] private bool m_unregisterOnDisable = true;
 
-        private void OnDisable() => Unregister();
+        private void OnEnable()
+        {
+            if(!m_registerOnEnable) return;
+            Register();
+        }
+
+        private void OnDisable()
+        {
+            if(!m_unregisterOnDisable) return;
+            Unregister();
+        }
 
         private void OnDestroy() => Unregister();
 
-        private void Register()
+        public void Register()
         {
             Event?.RegisterReceiver(this);
             Debug.Log(
@@ -26,7 +33,7 @@ namespace Utilities.Events
         }
 
 
-        private void Unregister()
+        public void Unregister()
         {
             Event?.UnregisterReceiver(this);
             Debug.Log(
