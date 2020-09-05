@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Utilities.General.ObjectGroups
@@ -10,8 +11,13 @@ namespace Utilities.General.ObjectGroups
         private readonly Dictionary<string, GameObject> m_objectGroupDictionary = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, List<GameObjectPuller>> m_ObjectPullerDictionary = new Dictionary<string, List<GameObjectPuller>>();
 
-        public void PushObject(GameObjectPusher pusher)
+        public void PushObject(GameObjectPusher pusher, bool overrideObject = true)
         {
+            if (overrideObject && m_objectGroupDictionary.ContainsValue(pusher.ObjectToPush))
+            {
+                string key = m_objectGroupDictionary.FirstOrDefault(pair => pair.Value == pusher.ObjectToPush).Key;
+                m_objectGroupDictionary.Remove(key);
+            }
             m_objectGroupDictionary.Add(pusher.Key, pusher.ObjectToPush);
             if (m_ObjectPullerDictionary.TryGetValue(pusher.Key, out var pullersList))
             {

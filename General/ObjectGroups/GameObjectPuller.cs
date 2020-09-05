@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Utilities.General.ObjectGroups
 {
+    [Serializable]
     public class OnObjectPulledEvent : UnityEvent<GameObject>
     {
     }
@@ -10,7 +12,9 @@ namespace Utilities.General.ObjectGroups
     public class GameObjectPuller : ObjectGroupWorker
     {
         public OnObjectPulledEvent OnObjectPulled = new OnObjectPulledEvent();
-        public string Key { get; set; }
+
+        [SerializeField] private string m_key = string.Empty;
+        public string Key => m_key;
 
         public void Set(GameObject gameObject) => OnObjectPulled.Invoke(gameObject);
 

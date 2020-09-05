@@ -6,14 +6,14 @@ namespace Utilities.General.UI
     public abstract class GeneralUiElementManager : MonoBehaviour
     {
         [SerializeField] protected Text text = null;
-        public string Text
+        public virtual string Text
         {
             get => text.text;
             set => text.text = value;
         }
         
         [SerializeField] protected Image image = null;
-        public Sprite Image
+        public virtual Sprite Image
         {
             get => image.sprite;
             set => image.sprite = value;

@@ -20,7 +20,7 @@ namespace Utilities.General.UI
         }
 
         [SerializeField] private RectTransform m_rectTransform = null;
-        [SerializeField] private Status m_status = Status.Close;
+        [SerializeField] private Status m_initialStatus = Status.Close;
         [SerializeField] private Vector2 m_openPosition = Vector2.zero;
         [SerializeField] private Vector2 m_closePosition = Vector2.zero;
         [SerializeField] private float m_speed = 5f;
@@ -40,7 +40,7 @@ namespace Utilities.General.UI
             if (m_rectTransform == null && transform is RectTransform rectTransform)
                 m_rectTransform = rectTransform;
             
-            switch (m_status)
+            switch (m_initialStatus)
             {
                 case Status.Open:
                     m_rectTransform.anchoredPosition = m_openPosition;

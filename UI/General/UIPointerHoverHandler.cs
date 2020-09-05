@@ -15,7 +15,17 @@ public class UIPointerHoverHandler : MonoBehaviour, IPointerEnterHandler, IPoint
     public OnPointerEventHandler OnPointerEnterCallback = new OnPointerEventHandler();
     public OnPointerEventHandler OnPointerExitCallback = new OnPointerEventHandler();
 
-    public void OnPointerEnter(PointerEventData eventData) => OnPointerEnterCallback.Invoke(eventData);
+    private void OnEnable() {}
 
-    public void OnPointerExit(PointerEventData eventData) => OnPointerExitCallback.Invoke(eventData);
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if(!enabled) return;
+        OnPointerEnterCallback.Invoke(eventData);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if(!enabled) return;
+        OnPointerExitCallback.Invoke(eventData);
+    }
 }
