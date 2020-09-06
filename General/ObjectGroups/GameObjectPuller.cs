@@ -4,13 +4,13 @@ using UnityEngine.Events;
 
 namespace Utilities.General.ObjectGroups
 {
-    [Serializable]
-    public class OnObjectPulledEvent : UnityEvent<GameObject>
-    {
-    }
-
     public class GameObjectPuller : ObjectGroupWorker
     {
+        [Serializable]
+        public class OnObjectPulledEvent : UnityEvent<GameObject>
+        {
+        }
+        
         public OnObjectPulledEvent OnObjectPulled = new OnObjectPulledEvent();
 
         [SerializeField] private string m_key = string.Empty;

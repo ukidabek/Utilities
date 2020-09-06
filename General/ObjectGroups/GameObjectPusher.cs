@@ -6,7 +6,6 @@ namespace Utilities.General.ObjectGroups
     public class GameObjectPusher : ObjectGroupWorker
     {
         [SerializeField] private string m_key = String.Empty;
-
         public string Key
         {
             get => string.IsNullOrEmpty(m_key) ? ObjectToPush.name : m_key;
@@ -23,9 +22,18 @@ namespace Utilities.General.ObjectGroups
         [SerializeField] private GameObject m_objectToPush = null;
         public GameObject ObjectToPush => m_objectToPush != null ? m_objectToPush : gameObject;
 
+        [SerializeField] private bool m_overrideObject = true;
+        public bool OverrideObject => m_overrideObject;
+
+        [SerializeField] private bool m_useObjectInstanceIdAsKey = false;
+
         protected override void Awake()
         {
-            m_objectGroup?.PushObject(this);
+            m_key = m_useObjectInstanceIdAsKey ? GetInstanceID().ToString() : m_key;
+            Pull();
         }
+
+        private void OnEnable() => Pull();
+        public void Pull() => m_objectGroup?.PushObject(this);
     }
 }
