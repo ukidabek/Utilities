@@ -30,6 +30,14 @@ namespace Utilities.Events
 
         public virtual void Invoke() => Invoke(m_defaultValue);
 
+        public virtual void Invoke(object @object)
+        {
+            if (@object is T value)
+                Invoke(value);
+            else
+                throw new ArgumentException();
+        }
+        
         public abstract void Invoke(T value);
     }
 }
