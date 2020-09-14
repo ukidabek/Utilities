@@ -30,10 +30,10 @@ namespace Utilities.General.ObjectGroups
         protected override void Awake()
         {
             m_key = m_useObjectInstanceIdAsKey ? GetInstanceID().ToString() : m_key;
-            Pull();
+            Push();
         }
 
-        private void OnEnable() => Pull();
-        public void Pull() => m_objectGroup?.PushObject(this);
+        private void OnEnable() => Push();
+        public void Push() => m_objectGroup?.PushObject(this);
     }
 }
