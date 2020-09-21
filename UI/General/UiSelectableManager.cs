@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,8 +11,8 @@ namespace Utilities.General.UI
     {
         [SerializeField] private bool m_autoInitialize = true;
         [SerializeField] private bool m_reactOnHierarchyChange = false;
-        [SerializeField] private Selectable[] m_selectable = null;
-
+        [SerializeField] private List<Selectable> m_selectable = null;
+        [SerializeField] private List<Selectable> m_selectableExceptions = null;
         private IEnumerator Start()
         {
             if (!m_autoInitialize) yield break;
@@ -20,7 +22,9 @@ namespace Utilities.General.UI
         
         private void GetSelectables()
         {
-            m_selectable = gameObject.GetComponentsInChildren<Selectable>(true);
+            m_selectable = gameObject.GetComponentsInChildren<Selectable>(true)
+                .Where(selectable => !m_selectableExceptions.Contains(selectable))
+                .ToList();
         }
 
         private void OnTransformChildrenChanged()
