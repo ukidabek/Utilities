@@ -34,6 +34,12 @@ namespace Utilities.General.ObjectGroups
         }
 
         private void OnEnable() => Push();
+
+        private void OnDestroy()
+        {
+            m_objectGroup?.ClearObject(this);
+        }
+
         public void Push() => m_objectGroup?.PushObject(this);
     }
 }

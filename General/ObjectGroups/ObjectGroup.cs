@@ -27,6 +27,12 @@ namespace Utilities.General.ObjectGroups
             }
         }
 
+        public void ClearObject(GameObjectPusher pusher)
+        {
+            if (m_objectGroupDictionary.ContainsKey(pusher.Key))
+                m_objectGroupDictionary.Remove(pusher.Key);
+        }
+
         public void PullObject(GameObjectPuller puller)
         {
             if (m_ObjectPullerDictionary.TryGetValue(puller.Key, out var pullersList))
