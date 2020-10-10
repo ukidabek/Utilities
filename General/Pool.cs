@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Utilities.General
@@ -14,14 +15,18 @@ namespace Utilities.General
 
         private List<T> list = new List<T>();
 
-        public Func<T, bool> ValidateIfPoolElementActive = null;
+        public Func<T, bool> ValidateIfPoolElementInactive = null;
         public Action<T> OnPoolElementSelected = null;
         public Action<T> OnPoolElementCreated = null;
         public Action<T> OnPoolElementDisabled = null;
 
+        public List<T> ActiveObjectList => list
+            .Where(component => !ValidateIfPoolElementInactive(component))
+            .ToList();
+        
         private Pool()
         {
-            ValidateIfPoolElementActive = component => !component.gameObject.activeSelf;
+            ValidateIfPoolElementInactive = component => !component.gameObject.activeSelf;
         }
         
         public Pool(T prefab, Transform parrent, int initialCount = 5, int maxCount = -1) : this()
@@ -48,7 +53,7 @@ namespace Utilities.General
             T instance = null;
             for (int i = 0; i < list.Count; i++)
             {
-                if (ValidateIfPoolElementActive.Invoke(list[i]))
+                if (ValidateIfPoolElementInactive.Invoke(list[i]))
                 {
                     instance = list[i];
                     list.RemoveAt(i);
