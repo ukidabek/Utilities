@@ -57,10 +57,10 @@ namespace Utilities
                list = new List<CombineInstance>();
             }
          }
-
-
+         
          if (list.Count > 0)
             CombineInstancecLists.Add(list);
+
          
          m_combinedObject = new GameObject($"{m_sourceObject.name}Combined");
          if (!AssetDatabase.IsValidFolder($"{path}/Models"))
@@ -82,12 +82,14 @@ namespace Utilities
             var meshFilter = newMeshGameObject.GetComponent<MeshFilter>();
             meshFilter.mesh = combinedMesh;
             AssetDatabase.CreateAsset(combinedMesh, $"{path}/Models/{combinedMesh.name}.asset");
+            EditorUtility.DisplayProgressBar($"{j}/{CombineInstancecLists.Count}", $"{path}/Models/{combinedMesh.name}.asset", j / (float) CombineInstancecLists.Count);
          }
 
          m_combinedObject = PrefabUtility.SaveAsPrefabAsset(m_combinedObject, $"{path}/{m_combinedObject.name}.prefab");
          DestroyImmediate(instance);
          
          AssetDatabase.SaveAssets();
+         EditorUtility.ClearProgressBar();
       }
    }
 }
