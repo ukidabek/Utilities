@@ -25,6 +25,11 @@ namespace Utilities.Events
     public abstract class BaseScriptableEventInvoker<T> : BaseScriptableEventInvoker
     {
         [SerializeField] private T m_defaultValue = default(T);
+        public T DefaultValue
+        {
+            get => m_defaultValue;
+            set => m_defaultValue = value;
+        }
 
         protected override void InvokeOnAwake() => Invoke();
 
