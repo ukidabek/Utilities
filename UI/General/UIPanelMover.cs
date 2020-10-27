@@ -13,11 +13,7 @@ namespace Utilities.General.UI
         {
         }
         
-        public enum Status
-        {
-            Open,
-            Close
-        }
+        public enum Status { Open, Close }
 
         [SerializeField] private RectTransform m_rectTransform = null;
         [SerializeField] private Status m_initialStatus = Status.Close;
@@ -40,7 +36,12 @@ namespace Utilities.General.UI
             if (m_rectTransform == null && transform is RectTransform rectTransform)
                 m_rectTransform = rectTransform;
             
-            switch (m_initialStatus)
+            ForceStatus(m_initialStatus);
+        }
+
+        private void ForceStatus(Status status)
+        {
+            switch (status)
             {
                 case Status.Open:
                     m_rectTransform.anchoredPosition = m_openPosition;
@@ -77,5 +78,11 @@ namespace Utilities.General.UI
 
         [ContextMenu("Close")]
         public void Close() => HandleCoroutine(m_closePosition);
+        
+        [ContextMenu("ForceOpen")]
+        public void ForceOpen() => ForceStatus(Status.Open);
+        
+        [ContextMenu("ForceClose")]
+        public void ForceClose() => ForceStatus(Status.Close);
     }
 }
