@@ -21,5 +21,8 @@ namespace Utilities.General.UI
             var t = _mode == Mode.AtoB ? fill : 1 - fill;
             _graphic.color = Color.Lerp(_a, _b, t);
         }
+
+        public void SetModeToAToB() => _mode = Mode.AtoB;
+        public void SetModeToBToA() => _mode = Mode.BtoA;
     }
 }
