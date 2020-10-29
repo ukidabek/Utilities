@@ -32,6 +32,7 @@ namespace Utilities.General.UI
 
         private void Awake()
         {
+            if(!enabled) return;
             openClosePositionDistance = Vector2.Distance(m_openPosition, m_closePosition);
             if (m_rectTransform == null && transform is RectTransform rectTransform)
                 m_rectTransform = rectTransform;

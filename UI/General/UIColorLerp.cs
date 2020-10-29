@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Utilities.General.UI
@@ -13,7 +14,15 @@ namespace Utilities.General.UI
 
         private void Awake()
         {
-            _graphic.color = _a;
+            switch (_mode)
+            {
+                case Mode.AtoB:
+                    _graphic.color = _a;
+                    break;
+                case Mode.BtoA:
+                    _graphic.color = _b;
+                    break;
+            }
         }
 
         public void LerpColor(float fill)
