@@ -40,7 +40,6 @@ namespace Utilities
 
          List<List<CombineInstance>> CombineInstancecLists = new List<List<CombineInstance>>();
          List<CombineInstance> list = new List<CombineInstance>();
-         int i = 0;
          foreach (var filter in meshFilters)
          {
             var combine = new CombineInstance();
