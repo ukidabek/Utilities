@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Utilities.Values
@@ -24,11 +22,11 @@ namespace Utilities.Values
             get => m_value;
             set
             {
-                if (!(value is T)) return;
-                ;
-
-                if (!m_value.Equals(value))
-                    OnValueChange?.Invoke((T) value);
+                if (value != null && !(value is T)) return;
+                T tmpValue = (T) value;
+                
+                if (m_value == null || !m_value.Equals(tmpValue))
+                    OnValueChange?.Invoke(tmpValue);
                 m_value = (T) value;
             }
         }

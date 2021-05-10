@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEngine;
-using Utilities.Events;
+﻿using UnityEngine;
 
 namespace Utilities.Values
 {
@@ -15,6 +11,7 @@ namespace Utilities.Values
         [SerializeField] private bool m_useReference = false;
         [SerializeField] private T m_reference = default;
         [SerializeField] private T1 m_value = default;
+        
         public T1 Value
         {
             get
@@ -23,6 +20,13 @@ namespace Utilities.Values
                     return value;
 
                 return m_value;
+            }
+            set
+            {
+                if (m_reference && m_reference != null)
+                    m_reference.Value = value;
+                else
+                    m_value = value;
             }
         }
 
