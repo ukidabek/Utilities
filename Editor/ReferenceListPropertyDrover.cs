@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -13,79 +12,8 @@ namespace Utilities.General
 #endif
     public class ReferenceListPropertyDrover : PropertyDrawer
     {
-        private class TypeProvider : ScriptableObject, ISearchWindowProvider
-        {
-            public SerializedProperty ListToFill { get; set; }
-            private readonly List<SearchTreeEntry> m_searchTreeEntry = new List<SearchTreeEntry>();
-            
-            public void GenerateTreeEntries(Type baseType)
-            {
-                m_searchTreeEntry.Clear();
-                m_searchTreeEntry.Add(new SearchTreeGroupEntry(new GUIContent(baseType.Name)));
-
-                bool TypeValidateLogic(Type type)
-                {
-                    if (type.IsAbstract) return false;
-                    if (type.IsInterface) return false;
-                    if (type.IsSubclassOf(typeof(UnityEngine.Object))) return false;
-                    if (baseType.IsInterface)
-                    {
-                        if (!baseType.IsAssignableFrom(type)) return false;
-                    }
-                    else
-                    {
-                        if (!type.IsSubclassOf(baseType)) return false;
-                    }
-                 
-                    return true;
-                }
-                
-                var selectedTypes = AppDomain.CurrentDomain
-                    .GetAssemblies()
-                    .SelectMany(assembly => assembly.GetTypes())
-                    .Where(TypeValidateLogic);
-                
-                foreach (var type in selectedTypes)
-                    m_searchTreeEntry.Add(new SearchTreeEntry(new GUIContent(type.Name))
-                    {
-                        level = 1,
-                        userData = type,
-                    });
-            }
-
-            public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context) => m_searchTreeEntry;
-
-            public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
-            {
-                try
-                {
-                    var Type = SearchTreeEntry.userData as Type;
-                    var instance = Activator.CreateInstance(Type);
-                    var index = ListToFill.arraySize++;
-                    var newElement = ListToFill.GetArrayElementAtIndex(index);
-                    newElement.managedReferenceValue = instance;
-                    ListToFill.serializedObject.ApplyModifiedProperties();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                    return false;
-                }
-                
-                return true;
-            }
-        }
-
-        private const float Margin =
-#if UNITY_6000
-            10f;
-#else
-            0f;
-#endif
-        
         private ReorderableList m_reorderableList = null;
         private TypeProvider m_typeProvider = null;
-        
         private int m_activeIndex = -1;
         private bool? m_isTypeInvalid;
         private Type m_baseType = null;
@@ -183,8 +111,9 @@ namespace Utilities.General
             
             if (elementManagedReferenceValue != null)
             {
-                rect.x += Margin;
-                rect.width -= Margin;
+                var margin = ReferencePropertyDroverHelper.Margin;
+                rect.x += margin;
+                rect.width -= margin;
                 var elementType = elementManagedReferenceValue.GetType();
                 EditorGUI.PropertyField(rect, element, new GUIContent(elementType.Name), element.isExpanded);
                 var elementSerializedObject = element.serializedObject;
@@ -208,7 +137,7 @@ namespace Utilities.General
         {
             var mousePosition = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
             var context = new SearchWindowContext(mousePosition);
-            m_typeProvider.ListToFill = list.serializedProperty;
+            m_typeProvider.Property = list.serializedProperty;
             SearchWindow.Open(context, m_typeProvider);
         }
     }

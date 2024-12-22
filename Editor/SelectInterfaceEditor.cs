@@ -9,46 +9,44 @@ namespace Utilities.General
 {
     public class SelectInterfaceEditor : EditorWindow
     {
-        private Vector2 scrollPosition = Vector2.zero;
+        private Vector2 m_scrollPosition = Vector2.zero;
 
         private SerializedProperty property;
-        private ClassConstructor classsConstructor;
+        private ClassConstructor m_classConstructor;
 
-        private string serchQuire = string.Empty;
-        private IEnumerable<Type> searchResult;
-        private FieldInfo field = null;
+        private string m_searchQuire = string.Empty;
+        private IEnumerable<Type> m_searchResult;
+        private FieldInfo m_field = null;
 
         public SelectInterfaceEditor(Rect position, SerializedProperty property)
         {
             this.position = position;
             this.property = property;
 
-            field = property.serializedObject.targetObject.GetType().GetField(property.propertyPath, BindingFlags.NonPublic | BindingFlags.Instance);
-            classsConstructor = field.GetValue(property.serializedObject.targetObject) as ClassConstructor;
+            m_field = property.serializedObject.targetObject.GetType().GetField(property.propertyPath, BindingFlags.NonPublic | BindingFlags.Instance);
+            m_classConstructor = m_field.GetValue(property.serializedObject.targetObject) as ClassConstructor;
         }
 
         private void OnGUI()
         {
             EditorGUI.BeginChangeCheck();
             {
-                serchQuire = EditorGUILayout.TextField("Search", serchQuire);
+                m_searchQuire = EditorGUILayout.TextField("Search", m_searchQuire);
             }
             if(EditorGUI.EndChangeCheck())
-                searchResult = classsConstructor.GetType().Assembly.GetTypes().Where(t => t.Name.Contains(serchQuire));
+                m_searchResult = m_classConstructor.GetType().Assembly.GetTypes().Where(t => t.Name.Contains(m_searchQuire));
 
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            m_scrollPosition = EditorGUILayout.BeginScrollView(m_scrollPosition);
             {
-                if(searchResult != null && searchResult.Count() > 0)
+                if(m_searchResult != null && m_searchResult.Any())
                 {
-                    foreach (var item in searchResult)
+                    foreach (var item in m_searchResult)
                     {
-                        if(GUILayout.Button(item.Name))
-                        {
-                            field.SetValue(property.serializedObject.targetObject, new ClassConstructor(item));
-                            property.serializedObject.ApplyModifiedProperties();
-                            this.Close();
-                            break;
-                        }
+                        if (!GUILayout.Button(item.Name)) continue;
+                        m_field.SetValue(property.serializedObject.targetObject, new ClassConstructor(item));
+                        property.serializedObject.ApplyModifiedProperties();
+                        Close();
+                        break;
                     }
                 }
             }
