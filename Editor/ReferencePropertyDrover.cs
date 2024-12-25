@@ -16,42 +16,53 @@ namespace Utilities.General
                 m_typeProvider = ScriptableObject.CreateInstance<TypeProvider>();
                 m_typeProvider.GenerateTreeEntries(fieldInfo.FieldType);
             }
-
-            var height = base.GetPropertyHeight(property, label);
+            
             var propertyHeight = EditorGUI.GetPropertyHeight(property, label, true);
 
-            if (property.managedReferenceValue != null)
-            {
-                propertyHeight = EditorGUI.GetPropertyHeight(property, label, property.isExpanded);
-            }
+            if (property.managedReferenceValue == null) return propertyHeight;
             
-            return height + propertyHeight;
+            propertyHeight = EditorGUI.GetPropertyHeight(property, label, property.isExpanded);
+            propertyHeight += base.GetPropertyHeight(property, label);
+
+            return propertyHeight;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var labelPosition = position;
-            labelPosition.width = EditorGUIUtility.labelWidth;
-            GUI.Label(labelPosition, label);
-            var valuePosition = position;
-            valuePosition.x = labelPosition.width + 19;
-            valuePosition.width -= EditorGUIUtility.labelWidth;
-            valuePosition.height = EditorGUIUtility.singleLineHeight;
+            
+            EditorGUI.BeginProperty(position, label, property);
+            
+            var controlPosition = EditorGUI.PrefixLabel(position, label);
 
             if (property.managedReferenceValue != null)
             {
                 var typeName = property.managedReferenceValue.GetType().Name;
-                EditorGUI.PropertyField(valuePosition, property, new GUIContent(typeName), property.isExpanded);
-                valuePosition.y += EditorGUI.GetPropertyHeight(property, label);
+                var propertyLabel = new GUIContent(typeName);
+                EditorGUIUtility.labelWidth = controlPosition.width * .4f;
+                EditorGUI.indentLevel = 1;
+                EditorGUI.PropertyField(controlPosition, property, propertyLabel, property.isExpanded);
+                controlPosition.y += EditorGUI.GetPropertyHeight(property, label);
+                controlPosition.height = EditorGUIUtility.singleLineHeight;
             }
 
-            if (GUI.Button(valuePosition, "Select Type"))
+            EditorGUI.indentLevel = 0;
+            controlPosition.width /= 2f;
+            if (GUI.Button(controlPosition, "Select Type"))
             {
                 var mousePosition = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
                 var context = new SearchWindowContext(mousePosition);
                 m_typeProvider.Property = property;
                 SearchWindow.Open(context, m_typeProvider);
             }
+            
+            controlPosition.x += controlPosition.width;
+            if (GUI.Button(controlPosition, "Clear"))
+            {
+                property.managedReferenceValue = null;
+                property.serializedObject.ApplyModifiedProperties();
+            }
+            
+            EditorGUI.EndProperty();
         }
     }
 }
