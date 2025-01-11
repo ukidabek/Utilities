@@ -47,7 +47,7 @@ namespace Utilities.General
                 }
             }
 
-            if (string.IsNullOrEmpty(classsConstructor.Type.FullName) && string.IsNullOrEmpty(classsConstructor.Type.AssemblFullName) && _constructorsList.Count > 0)
+            if (string.IsNullOrEmpty(classsConstructor.Type.FullName) && string.IsNullOrEmpty(classsConstructor.Type.AssemblyFullName) && _constructorsList.Count > 0)
                 classsConstructor = _constructorsList[0];
         }
 
