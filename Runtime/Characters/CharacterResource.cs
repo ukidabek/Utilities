@@ -6,8 +6,8 @@ namespace Utilities.General.Characters
     [Serializable]
     public class CharacterResource : ICharacterResource
     {
-        [SerializeField] private Key m_keyA = null;
-        public Key KeyA => m_keyA;
+        [SerializeField] private Key m_key = null;
+        public Key Key => m_key;
         
         public event Action<float> OnValueChanged = null;
 

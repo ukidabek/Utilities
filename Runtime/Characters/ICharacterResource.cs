@@ -4,7 +4,7 @@ namespace Utilities.General.Characters
 {
 	public interface ICharacterResource
 	{
-		public Key KeyA { get; }
+		public Key Key { get; }
 		float Value { get; set; }
 		event Action<float> OnValueChanged;
 		void Initialize();
