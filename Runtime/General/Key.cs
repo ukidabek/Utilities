@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Utilities.General
 {
-    [CreateAssetMenu(fileName = "NewKey", menuName = "States/Blackboard/Key")]
+    [CreateAssetMenu(fileName = "NewKey", menuName = "Utilities/Key")]
     public class Key : ScriptableObject, IEquatable<Key>
     {
         private static Dictionary<int, Key> m_registeredKeys = new Dictionary<int, Key>();
