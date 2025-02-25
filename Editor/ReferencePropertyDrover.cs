@@ -29,7 +29,6 @@ namespace Utilities.General
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            
             EditorGUI.BeginProperty(position, label, property);
             
             var controlPosition = EditorGUI.PrefixLabel(position, label);
@@ -40,7 +39,10 @@ namespace Utilities.General
                 var propertyLabel = new GUIContent(typeName);
                 EditorGUIUtility.labelWidth = controlPosition.width * .4f;
                 EditorGUI.indentLevel = 1;
-                EditorGUI.PropertyField(controlPosition, property, propertyLabel, property.isExpanded);
+                var isExpanded = property.isExpanded;
+                if (!isExpanded)
+                    controlPosition.height = EditorGUIUtility.singleLineHeight;
+                EditorGUI.PropertyField(controlPosition, property, propertyLabel, isExpanded);
                 controlPosition.y += EditorGUI.GetPropertyHeight(property, label);
                 controlPosition.height = EditorGUIUtility.singleLineHeight;
             }

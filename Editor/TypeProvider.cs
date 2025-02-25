@@ -28,7 +28,7 @@ namespace Utilities.General
                 }
                 else
                 {
-                    if (!type.IsSubclassOf(baseType)) return false;
+                    if (!type.IsSubclassOf(baseType) && !baseType.IsAssignableFrom(type)) return false;
                 }
                  
                 return true;
