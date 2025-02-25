@@ -9,26 +9,25 @@ namespace Utilities.General.Characters
 		[SerializeField] private CharacterCollection m_characterPool = null;
 		public CharacterCollection CharacterPool => m_characterPool;
 
-		[SerializeField] private Object[] m_characterResources = null;
-		public IEnumerable<ICharacterResource> Resources { get; private set; }
+		[ReferenceList, SerializeReference] private ICharacterResource[] m_characterResources = null;
+		public IEnumerable<ICharacterResource> Resources => m_characterResources;
 
-		private IIsDeadStatusProvider m_isDeadStatisProvider = null;
-		public bool IsDead => ChandleStatusProvider(m_isDeadStatisProvider);
+		private IIsDeadStatusProvider m_isDeadStatusProvider = null;
+		public bool IsDead => ChandleStatusProvider(m_isDeadStatusProvider);
 
 		protected virtual void Awake()
 		{
-			Resources = m_characterResources
-				.OfType<ICharacterResource>()
-				.ToArray();
-			m_isDeadStatisProvider = GetComponent<IIsDeadStatusProvider>();
+			m_isDeadStatusProvider = GetComponent<IIsDeadStatusProvider>();
+			foreach (var resource in m_characterResources)
+			{
+				resource.Reset();
+			}
 		}
 
 		protected virtual void OnEnable() => m_characterPool?.AddCharacter(this);
 
 		protected virtual void OnDisable() => m_characterPool?.RemoveCharacter(this);
-
-		protected virtual void OnDestroy() => m_characterPool?.RemoveCharacter(this);
-
+		
 		public IEnumerable<T> GetResourcesOfType<T>() where T : CharacterResource => m_characterResources.OfType<T>();
 
 		protected bool ChandleStatusProvider<T>(T statusProvider) where T : IStatusProvider
@@ -41,20 +40,6 @@ namespace Utilities.General.Characters
 			}
 
 			return statusProvider.Status;
-		}
-
-		[ContextMenu("Collect all resources")]
-		private void CollectAllResources()
-		{
-			var rootGameObject = transform.root.gameObject;
-			var resources = rootGameObject.GetComponentsInChildren<ICharacterResource>();
-
-			m_characterResources = m_characterResources
-				.OfType<ICharacterResource>()
-				.Concat(resources)
-				.Distinct()
-				.OfType<Object>()
-				.ToArray();
 		}
 	}
 }
