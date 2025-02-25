@@ -11,7 +11,7 @@ namespace Utilities.General.Characters
         
         public event Action<float> OnValueChanged = null;
 
-        [SerializeField, ReadOnly] private float m_value = 0;
+        [SerializeField] private float m_value = 0;
 
         public virtual float Value
         {
@@ -25,9 +25,14 @@ namespace Utilities.General.Characters
         }
 
         [SerializeField] protected float m_maximumValue = 100;
+        public float MaximumValue
+        {
+            get => m_maximumValue;
+            set => m_maximumValue = value;
+        }
+        
+        public virtual void Initialize() => Value = MaximumValue;
 
-        public virtual void Initialize() => m_maximumValue = m_value;
-
-        public virtual void Reset() => m_value = m_maximumValue;
+        public virtual void Reset() => Initialize();
     }
 }
