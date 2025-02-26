@@ -28,16 +28,14 @@ namespace Utilities.General.Characters
 		
 		protected virtual void Awake()
 		{
-			foreach (var statusProvider in StatusProviders)
-			{
-				statusProvider.Initialize(this);
-			}
-			
 			foreach (var resource in m_characterResources)
 			{
 				m_resourcesDictionary.Add(resource.Key, resource);
 				resource.Initialize();
 			}
+			
+			foreach (var statusProvider in StatusProviders) 
+				statusProvider.Initialize(this);
 		}
 		
 		protected virtual void OnEnable() => m_characterPool?.AddCharacter(this);
