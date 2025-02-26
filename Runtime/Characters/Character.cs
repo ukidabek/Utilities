@@ -20,7 +20,6 @@ namespace Utilities.General.Characters
 		
 		protected virtual void Awake()
 		{
-			m_isDeadStatusProvider = GetComponent<IIsDeadStatusProvider>();
 			foreach (var resource in m_characterResources)
 			{
 				m_resourcesDictionary.Add(resource.Key, resource);
