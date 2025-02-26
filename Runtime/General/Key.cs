@@ -22,36 +22,21 @@ namespace Utilities.General
 
         public static Key GetKey(int hash) => m_registeredKeys.GetValueOrDefault(hash);
 
-        private void OnValidate() => m_hash = FNVHash(name);
+        private void OnValidate() => m_hash = HashFunctions.FNVHash(name);
 
-        private void Reset() => m_hash = FNVHash(name);
-
-        private int FNVHash(string value)
-        {
-            uint offset = 2166136261;
-            uint primeNumber = 16777619;
-            uint hash = offset;
-			
-            foreach (var VARIABLE in value)
-            {
-                hash ^= VARIABLE;
-                hash *= primeNumber;
-            }
-
-            return (int)hash;
-        }
+        private void Reset() => m_hash = HashFunctions.FNVHash(name);
 
         public static bool operator ==(Key a, Key b)
         {
-            if(a is null && b is null) return true;
-            if(a is null || b is null) return false;
+            if (a is null && b is null) return true;
+            if (a is null || b is null) return false;
             return a.m_hash == b.m_hash;
         }
 
         public static bool operator !=(Key a, Key b)
         {
-            if(a is null && b is null) return true;
-            if(a is null || b is null) return false;
+            if (a is null && b is null) return true;
+            if (a is null || b is null) return false;
             return a.m_hash != b.m_hash;
         }
 
