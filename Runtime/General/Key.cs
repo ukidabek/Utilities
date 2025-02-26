@@ -41,14 +41,24 @@ namespace Utilities.General
             return (int)hash;
         }
 
-        public static bool operator ==(Key a, Key b) => a.m_hash == b.m_hash;
+        public static bool operator ==(Key a, Key b)
+        {
+            if(a is null && b is null) return true;
+            if(a is null || b is null) return false;
+            return a.m_hash == b.m_hash;
+        }
 
-        public static bool operator !=(Key a, Key b) => a.m_hash != b.m_hash;
-        
+        public static bool operator !=(Key a, Key b)
+        {
+            if(a is null && b is null) return true;
+            if(a is null || b is null) return false;
+            return a.m_hash != b.m_hash;
+        }
+
         public bool Equals(Key other)
         {
             if (other is null) return false;
-            return base.Equals(other) && m_hash == other.m_hash;
+            return m_hash == other.m_hash;
         }
 
         public override bool Equals(object obj) => obj is Key other && Equals(other);
