@@ -7,16 +7,27 @@ namespace Utilities.General.Characters
     [Serializable, Preserve]
     public class ResourceDepletedIsDeadStatusProvider : IIsDeadStatusProvider
     {
-        [SerializeField] private Character m_character;	
         [SerializeField] private Key m_resourceKey;
 
-        public bool Status
+        protected ICharacterResource m_resource = null;
+        
+        public bool Status => m_resource?.Value == 0f;
+
+        public void Initialize(Character character)
         {
-            get
+            if (m_resourceKey == null)
             {
-                if (!m_character.TryGetResource(m_resourceKey, out var resource)) return false;
-                return resource.Value == 0f;
+                Debug.LogError($"{nameof(Key)} is is null!");
+                return;
             }
+            
+            if (!character.TryGetResource(m_resourceKey, out var resource))
+            {
+                Debug.LogError($"There is no resource with key {m_resourceKey.name}!");
+                return;
+            }
+            
+            m_resource = resource;
         }
     }
 }

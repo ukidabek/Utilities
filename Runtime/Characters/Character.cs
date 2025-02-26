@@ -17,9 +17,22 @@ namespace Utilities.General.Characters
 		[Reference, SerializeReference] private IIsDeadStatusProvider m_isDeadStatusProvider = null;
 		public bool IsDead => HandleStatusProvider(m_isDeadStatusProvider);
 		public bool IsAlive => !IsDead;
+
+		protected virtual IEnumerable<IStatusProvider> StatusProviders
+		{
+			get
+			{
+				yield return m_isDeadStatusProvider;
+			}
+		}
 		
 		protected virtual void Awake()
 		{
+			foreach (var statusProvider in StatusProviders)
+			{
+				statusProvider.Initialize(this);
+			}
+			
 			foreach (var resource in m_characterResources)
 			{
 				m_resourcesDictionary.Add(resource.Key, resource);
@@ -30,7 +43,9 @@ namespace Utilities.General.Characters
 		protected virtual void OnEnable() => m_characterPool?.AddCharacter(this);
 
 		protected virtual void OnDisable() => m_characterPool?.RemoveCharacter(this);
-		
+
+		protected virtual void Reset() => m_isDeadStatusProvider = new ResourceDepletedIsDeadStatusProvider();
+
 		public IEnumerable<T> GetResourcesOfType<T>() where T : CharacterResource => m_characterResources.OfType<T>();
 
 		public void ResetResources()
