@@ -10,6 +10,7 @@ namespace Utilities.General
 {
     public class TypeProvider : ScriptableObject, ISearchWindowProvider
     {
+        private static Type[] Types = null;
         public SerializedProperty Property { get; set; }
         private readonly List<SearchTreeEntry> m_searchTreeEntry = new List<SearchTreeEntry>();
             
@@ -20,28 +21,17 @@ namespace Utilities.General
 
             bool TypeValidateLogic(Type type)
             {
-                if (type.IsAbstract) return false;
-                if (type.IsInterface) return false;
-                if (type.IsSubclassOf(typeof(UnityEngine.Object))) return false;
-                if (!type.GetCustomAttributes(true).OfType<SerializableAttribute>().Any()) return false;
                 if (baseType.IsInterface)
-                {
-                    if (!baseType.IsAssignableFrom(type)) return false;
-                }
-                else
-                {
-                    if (!type.IsSubclassOf(baseType) && !baseType.IsAssignableFrom(type)) return false;
-                }
-                 
-                return true;
+                    return baseType.IsAssignableFrom(type);
+
+                return type.IsSubclassOf(baseType) && !baseType.IsAssignableFrom(type);
             }
             
-            Profiler.BeginSample("Generate Tree Entries");
-            var selectedTypes = AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(TypeValidateLogic);
-            Profiler.EndSample();
+            CacheTypesIfNecessary();
+            
+            Profiler.BeginSample($"({nameof(TypeProvider)}) - Generate Tree Entries");
+            
+            var selectedTypes = Types.Where(TypeValidateLogic);
                 
             foreach (var type in selectedTypes)
                 m_searchTreeEntry.Add(new SearchTreeEntry(new GUIContent(type.Name))
@@ -49,6 +39,22 @@ namespace Utilities.General
                     level = 1,
                     userData = type,
                 });
+            Profiler.EndSample();
+        }
+
+        private static void CacheTypesIfNecessary()
+        {
+            if (Types != null) return;
+            Profiler.BeginSample($"({nameof(TypeProvider)}) - Cache Types");
+            Types = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => !type.IsAbstract && 
+                               !type.IsInterface && 
+                               !type.IsSubclassOf(typeof(UnityEngine.Object)) &&
+                               type.GetCustomAttributes(true).OfType<SerializableAttribute>().Any())
+                .ToArray();
+            Profiler.EndSample();
         }
 
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context) => m_searchTreeEntry;

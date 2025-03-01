@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Utilities.General
 {
@@ -20,6 +21,7 @@ namespace Utilities.General
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            Profiler.BeginSample($"{nameof(ReferenceListPropertyDrover)} invoke OnGUI");
             if (m_isTypeInvalid.Value)
             {
                 EditorGUI.LabelField(position, $"Field {label} is invalid!");
@@ -28,6 +30,7 @@ namespace Utilities.General
 
             m_reorderableList.DoList(position);
             m_reorderableList.serializedProperty.serializedObject.UpdateIfRequiredOrScript();
+            Profiler.EndSample();
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
