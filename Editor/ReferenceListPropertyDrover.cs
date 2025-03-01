@@ -54,8 +54,11 @@ namespace Utilities.General
                 if (m_isTypeInvalid.Value)
                     return base.GetPropertyHeight(property, label);
                 
-                var attributes = m_baseType.GetCustomAttributes(true);
-                m_isTypeInvalid = !attributes.OfType<SerializeReference>().Any();
+                /*TODO Add additional validation if property have SerializeReference assigned*/
+                
+                // var type = Type.GetType(property.type);
+                // var attributes = type.GetCustomAttributes(true);
+                // m_isTypeInvalid = !attributes.OfType<SerializeReference>().Any();
             }
             
             if(m_isTypeInvalid.Value)
