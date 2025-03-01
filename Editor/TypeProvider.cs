@@ -22,6 +22,7 @@ namespace Utilities.General
                 if (type.IsAbstract) return false;
                 if (type.IsInterface) return false;
                 if (type.IsSubclassOf(typeof(UnityEngine.Object))) return false;
+                if (!type.GetCustomAttributes(true).OfType<SerializableAttribute>().Any()) return false;
                 if (baseType.IsInterface)
                 {
                     if (!baseType.IsAssignableFrom(type)) return false;

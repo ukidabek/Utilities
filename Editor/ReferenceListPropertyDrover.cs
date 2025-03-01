@@ -22,7 +22,7 @@ namespace Utilities.General
         {
             if (m_isTypeInvalid.Value)
             {
-                EditorGUI.LabelField(position, $"{m_baseType} is invalid!");
+                EditorGUI.LabelField(position, $"Field {label} is invalid!");
                 return;
             }
 
@@ -53,6 +53,9 @@ namespace Utilities.General
                 m_isTypeInvalid = m_baseType.IsSubclassOf(typeof(UnityEngine.Object));
                 if (m_isTypeInvalid.Value)
                     return base.GetPropertyHeight(property, label);
+                
+                var attributes = m_baseType.GetCustomAttributes(true);
+                m_isTypeInvalid = !attributes.OfType<SerializeReference>().Any();
             }
             
             if(m_isTypeInvalid.Value)
