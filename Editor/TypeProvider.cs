@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Utilities.General
 {
@@ -34,11 +35,13 @@ namespace Utilities.General
                  
                 return true;
             }
-                
+            
+            Profiler.BeginSample("Generate Tree Entries");
             var selectedTypes = AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(TypeValidateLogic);
+            Profiler.EndSample();
                 
             foreach (var type in selectedTypes)
                 m_searchTreeEntry.Add(new SearchTreeEntry(new GUIContent(type.Name))
