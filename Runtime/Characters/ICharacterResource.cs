@@ -6,6 +6,7 @@ namespace Utilities.General.Characters
 	{
 		public Key Key { get; }
 		float Value { get; set; }
+		float MaximumValue { get; set; }
 		event Action<float> OnValueChanged;
 		void Initialize();
 		void Reset();
