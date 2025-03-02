@@ -16,7 +16,7 @@ namespace Utilities.General
         private readonly List<SearchTreeEntry> m_searchTreeEntry = new List<SearchTreeEntry>();
 
         [InitializeOnLoadMethod]
-        private void CacheTypes()
+        private static void CacheTypes()
         {
             BaseTypeToRelatedTypes.Clear();
             Types = null;
