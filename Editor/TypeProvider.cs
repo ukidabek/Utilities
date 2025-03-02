@@ -15,10 +15,12 @@ namespace Utilities.General
         public SerializedProperty Property { get; set; }
         private readonly List<SearchTreeEntry> m_searchTreeEntry = new List<SearchTreeEntry>();
 
-        static TypeProvider()
+        [InitializeOnLoadMethod]
+        private void CacheTypes()
         {
             BaseTypeToRelatedTypes.Clear();
-            CacheTypesIfNecessary(true);
+            Types = null;
+            CacheTypesIfNecessary();
         }
 
         public void GenerateTreeEntries(Type baseType)
@@ -56,12 +58,11 @@ namespace Utilities.General
             Profiler.EndSample();
         }
 
-        private static void CacheTypesIfNecessary(bool ignoreCacheChecks = false)
+        private static void CacheTypesIfNecessary()
         {
-            if (Types != null && !ignoreCacheChecks) return;
+            if (Types != null ) return;
             Profiler.BeginSample($"({nameof(TypeProvider)}) - Cache Types");
-
-            Types = null;
+            
             Types = AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
