@@ -11,9 +11,16 @@ namespace Utilities.General
     public class TypeProvider : ScriptableObject, ISearchWindowProvider
     {
         private static Type[] Types = null;
+        private static Dictionary<Type, Type[]> BaseTypeToRelatedTypes = new Dictionary<Type, Type[]>();
         public SerializedProperty Property { get; set; }
         private readonly List<SearchTreeEntry> m_searchTreeEntry = new List<SearchTreeEntry>();
-            
+
+        static TypeProvider()
+        {
+            BaseTypeToRelatedTypes.Clear();
+            CacheTypesIfNecessary(true);
+        }
+
         public void GenerateTreeEntries(Type baseType)
         {
             m_searchTreeEntry.Clear();
@@ -30,9 +37,16 @@ namespace Utilities.General
             CacheTypesIfNecessary();
             
             Profiler.BeginSample($"({nameof(TypeProvider)}) - Generate Tree Entries");
-            
-            var selectedTypes = Types.Where(TypeValidateLogic);
-                
+
+            Type[] selectedTypes = null;
+            if(BaseTypeToRelatedTypes.TryGetValue(baseType, out var cachedTypes))
+                selectedTypes = cachedTypes;
+            else
+            {
+                selectedTypes = Types.Where(TypeValidateLogic).ToArray();
+                BaseTypeToRelatedTypes.Add(baseType, selectedTypes);
+            }
+
             foreach (var type in selectedTypes)
                 m_searchTreeEntry.Add(new SearchTreeEntry(new GUIContent(type.Name))
                 {
@@ -42,19 +56,30 @@ namespace Utilities.General
             Profiler.EndSample();
         }
 
-        private static void CacheTypesIfNecessary()
+        private static void CacheTypesIfNecessary(bool ignoreCacheChecks = false)
         {
-            if (Types != null) return;
+            if (Types != null && !ignoreCacheChecks) return;
             Profiler.BeginSample($"({nameof(TypeProvider)}) - Cache Types");
+
+            Types = null;
             Types = AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => !type.IsAbstract && 
-                               !type.IsInterface && 
-                               !type.IsSubclassOf(typeof(UnityEngine.Object)) &&
-                               type.GetCustomAttributes(true).OfType<SerializableAttribute>().Any())
+                .Where(IsTypeValid)
                 .ToArray();
+            
             Profiler.EndSample();
+            
+            return;
+
+            bool IsTypeValid(Type type)
+            {
+                if (type.IsAbstract) return false;
+                if (type.IsInterface) return false;
+                if (type.IsSubclassOf(typeof(UnityEngine.Object))) return false;
+                if (!type.GetCustomAttributes(true).OfType<SerializableAttribute>().Any()) return false;
+                return true;
+            }
         }
 
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context) => m_searchTreeEntry;
