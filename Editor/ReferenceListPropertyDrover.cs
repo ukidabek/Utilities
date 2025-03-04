@@ -86,9 +86,20 @@ namespace Utilities.General
                 drawHeaderCallback = DrawHeaderCallback, 
                 drawElementCallback = DrawElementCallback,
                 elementHeightCallback = ElementHeightCallback,
+                onReorderCallbackWithDetails = OnReorderCallback,
             };
             
             return m_reorderableList.GetHeight();
+        }
+
+        private void OnReorderCallback(ReorderableList list, int oldindex, int newindex)
+        {
+            var listSerializedProperty = list.serializedProperty;
+            var oldValueSerializedProperty = listSerializedProperty.GetArrayElementAtIndex(oldindex);
+            var newValueSerializedProperty = listSerializedProperty.GetArrayElementAtIndex(newindex);
+            (newValueSerializedProperty, oldValueSerializedProperty) = (oldValueSerializedProperty, newValueSerializedProperty);
+            listSerializedProperty.serializedObject.ApplyModifiedProperties();
+            listSerializedProperty.serializedObject.UpdateIfRequiredOrScript();
         }
 
         private void DrawHeaderCallback(Rect rect)
