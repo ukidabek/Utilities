@@ -2,64 +2,43 @@
 
 namespace Utilities.General.Animation
 {
-	[CreateAssetMenu(fileName = "AnimationParameter", menuName = "Utilities/Animation/AnimationParameter")]
-	public class AnimatorParameterDefinition : AnimatorDefinitionBase
+	public class AnimatorParameterDefinition : AnimatorControllerDefinition
 	{
-		[SerializeField, HideInInspector] private string _name = string.Empty;
-		[SerializeField, HideInInspector] private int _hash = 0;
+		[SerializeField] private AnimatorControllerParameterType m_type;
+		public AnimatorControllerParameterType Type => m_type;
+
 		[Header("Set float settings")]
 		[SerializeField] private bool m_useDampTime = false;
 		[SerializeField] private float m_dampTime = 1.0f;
-
-		public void SetInt(Animator animator, int value)
+		
+		internal void Initialize(AnimatorControllerParameter parameter)
 		{
-			ValidateAnimator(animator);
-			animator.SetInteger(_hash, value);
+			Initialize(parameter.name);
+			m_type = parameter.type;
 		}
+		
+		public void SetInt(Animator animator, int value) => animator.SetInteger(m_hash, value);
 
-		public int GetInt(Animator animator)
-		{
-			ValidateAnimator(animator);
-			return animator.GetInteger(_hash);
-		}
+		public int GetInt(Animator animator) => animator.GetInteger(m_hash);
 
-		public void SetBool(Animator animator, bool value)
-		{
-			ValidateAnimator(animator);
-			animator.SetBool(_hash, value);
-		}
+		public void SetBool(Animator animator, bool value) => animator.SetBool(m_hash, value);
 
-		public bool GetBool(Animator animator)
-		{
-			ValidateAnimator(animator);
-			return animator.GetBool(_hash);
-		}
+		public bool GetBool(Animator animator) => animator.GetBool(m_hash);
 
-		public void SetFloat(Animator animator, float value)
+		public void SetFloat(Animator animator, float value) => SetFloat(animator, value, Time.deltaTime);
+		
+		public void SetFloat(Animator animator, float value, float deltaTime)
 		{
-			ValidateAnimator(animator);
 			if (m_useDampTime)
-				animator.SetFloat(_hash, value, m_dampTime, Time.deltaTime);
+				animator.SetFloat(m_hash, value, m_dampTime, deltaTime);
 			else
-				animator.SetFloat(_hash, value);
+				animator.SetFloat(m_hash, value);
 		}
 
-		public float GetFloat(Animator animator)
-		{
-			ValidateAnimator(animator);
-			return animator.GetFloat(_hash);
-		}
+		public float GetFloat(Animator animator) => animator.GetFloat(m_hash);
 
-		public void SetTrigger(Animator animator)
-		{
-			ValidateAnimator(animator);
-			animator.SetTrigger(_hash);
-		}
+		public void SetTrigger(Animator animator) => animator.SetTrigger(m_hash);
 
-		public void ResetTrigger(Animator animator)
-		{
-			ValidateAnimator(animator);
-			animator.ResetTrigger(_hash);
-		}
+		public void ResetTrigger(Animator animator) => animator.ResetTrigger(m_hash);
 	}
 }
