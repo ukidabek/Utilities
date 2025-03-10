@@ -10,12 +10,22 @@ namespace Utilities.General.Animation
 		[Header("Set float settings")]
 		[SerializeField] private bool m_useDampTime = false;
 		[SerializeField] private float m_dampTime = 1.0f;
-		
-		internal void Initialize(AnimatorControllerParameter parameter)
+
+#if UNITY_EDITOR
+		public AnimatorParameterDefinition Initialize(AnimatorControllerParameter parameter)
 		{
 			Initialize(parameter.name);
 			m_type = parameter.type;
+			return this;
 		}
+		
+		public AnimatorParameterDefinition Initialize(AnimatorParameterDefinition parameter)
+		{
+			Initialize(parameter.name);
+			m_type = parameter.m_type;
+			return this;
+		}
+#endif
 		
 		public void SetInt(Animator animator, int value) => animator.SetInteger(m_hash, value);
 
