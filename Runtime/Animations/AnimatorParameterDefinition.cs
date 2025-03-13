@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor.Animations;
+using UnityEngine;
 
 namespace Utilities.General.Animation
 {
@@ -10,11 +11,10 @@ namespace Utilities.General.Animation
 		[Header("Set float settings")]
 		[SerializeField] private bool m_useDampTime = false;
 		[SerializeField] private float m_dampTime = 1.0f;
-
-#if UNITY_EDITOR
-		public AnimatorParameterDefinition Initialize(AnimatorControllerParameter parameter)
+		
+		public AnimatorParameterDefinition Initialize(AnimatorController controller, AnimatorControllerParameter parameter)
 		{
-			Initialize(parameter.name);
+			Initialize($"{controller.name}/{parameter.name}");
 			m_type = parameter.type;
 			return this;
 		}
@@ -25,8 +25,6 @@ namespace Utilities.General.Animation
 			m_type = parameter.m_type;
 			return this;
 		}
-#endif
-		
 		public void SetInt(Animator animator, int value) => animator.SetInteger(m_hash, value);
 
 		public int GetInt(Animator animator) => animator.GetInteger(m_hash);

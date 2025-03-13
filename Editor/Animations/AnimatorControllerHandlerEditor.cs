@@ -8,7 +8,7 @@ using AnimatorController = UnityEditor.Animations.AnimatorController;
 
 namespace Utilities.General.Animation
 {
-    [CustomEditor(typeof(AnimatorControllerHandler))]
+    [CustomEditor(typeof(AnimatorControllerParametersCollection))]
     public class AnimatorControllerHandlerEditor : Editor
     {
         private enum RefreshStatus
@@ -19,11 +19,11 @@ namespace Utilities.General.Animation
             Apply = 3,
         }
         
-        private List<AnimatorParameterDefinition> m_validParameters = new List<AnimatorParameterDefinition>(30);
-        private List<AnimatorParameterDefinition> m_parametersToAdd = new List<AnimatorParameterDefinition>(30);
-        private List<AnimatorParameterDefinition> m_parametersToRemove = new List<AnimatorParameterDefinition>(30);
-        private List<bool> m_overrideDefinition = new List<bool>(30);
-            
+        private readonly List<AnimatorParameterDefinition> m_validParameters = new List<AnimatorParameterDefinition>(30);
+        private readonly List<AnimatorParameterDefinition> m_parametersToAdd = new List<AnimatorParameterDefinition>(30);
+        private readonly List<AnimatorParameterDefinition> m_parametersToRemove = new List<AnimatorParameterDefinition>(30);
+        private readonly List<bool> m_overrideDefinition = new List<bool>(30);
+        
         private IEnumerable<IList> ParametersList
         {
             get
@@ -43,10 +43,14 @@ namespace Utilities.General.Animation
         private ReorderableList m_parametersToAddList;
         private ReorderableList m_parametersToRemoveList;
         
+        private AnimatorControllerCollectionInitializer.ConnectionFieldInfo FieldInfo = default;
+        
         private void OnEnable()
         {
-            m_handledAnimatorController = AnimatorControllerHandlerInitializer.HandledAnimatorControllerFieldInfo.GetValue(target) as AnimatorController;
-            m_parameterDefinitions = AnimatorControllerHandlerInitializer.ParameterDefinitionsFieldInfo.GetValue(target) as AnimatorParameterDefinition[];
+            FieldInfo = AnimatorControllerCollectionInitializer.FieldInfoDictionary[target.GetType()];
+            
+            m_handledAnimatorController = FieldInfo.HandledAnimatorControllerFieldInfo.GetValue(target) as AnimatorController;
+            m_parameterDefinitions = FieldInfo.DefinitionsFieldInfo.GetValue(target) as AnimatorParameterDefinition[];
 
             m_parametersToAddList = new ReorderableList(
                 m_parametersToAdd, 
@@ -118,10 +122,10 @@ namespace Utilities.General.Animation
                 AssetDatabase.RemoveObjectFromAsset(itemToRemove);
 
             m_parameterDefinitions = m_validParameters.Concat(m_parametersToAdd).ToArray();
-            AnimatorControllerHandlerInitializer.ParameterDefinitionsFieldInfo.SetValue(target, m_parameterDefinitions);
+            FieldInfo.DefinitionsFieldInfo.SetValue(target, m_parameterDefinitions);
             
             serializedObject.ApplyModifiedProperties();
-            (target as AnimatorControllerHandler).ApplyChanges();
+            (target as AnimatorControllerParametersCollection).ApplyChanges();
             
             m_refreshStatus = RefreshStatus.None;
         }
@@ -130,7 +134,8 @@ namespace Utilities.General.Animation
         {
             if (!GUILayout.Button("Initialize")) return;
             m_parameterDefinitions = m_handledAnimatorController.parameters
-                .Select(CreateInstance<AnimatorParameterDefinition>().Initialize)
+                .Select(parameter => CreateInstance<AnimatorParameterDefinition>()
+                    .Initialize(m_handledAnimatorController, parameter))
                 .Select(parameter =>
                 {
                     AssetDatabase.AddObjectToAsset(parameter, target);
@@ -138,7 +143,7 @@ namespace Utilities.General.Animation
                 })
                 .ToArray();
 
-            AnimatorControllerHandlerInitializer.ParameterDefinitionsFieldInfo.SetValue(target, m_parameterDefinitions);
+            FieldInfo.DefinitionsFieldInfo.SetValue(target, m_parameterDefinitions);
             serializedObject.ApplyModifiedProperties();
             m_refreshStatus = RefreshStatus.None;
         }
@@ -184,6 +189,7 @@ namespace Utilities.General.Animation
         private void GetRefreshInformation()
         {
             if (!GUILayout.Button("Refresh")) return;
+            
             foreach (var list in ParametersList)
                 list.Clear();
         
@@ -202,7 +208,8 @@ namespace Utilities.General.Animation
                     continue;
                 }
                 
-                m_parametersToAdd.Add(CreateInstance<AnimatorParameterDefinition>().Initialize(parameter));
+                m_parametersToAdd.Add(CreateInstance<AnimatorParameterDefinition>()
+                    .Initialize(m_handledAnimatorController, parameter));
             }
             
             m_parametersToRemove.AddRange(m_parameterDefinitions.Except(m_validParameters));

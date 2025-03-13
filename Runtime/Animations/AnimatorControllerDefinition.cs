@@ -9,10 +9,14 @@ namespace Utilities.General.Animation
         [SerializeField] protected int m_hash = 0;
         public int Hash => m_hash;
 
-        protected void Initialize(string name)
+        protected AnimatorControllerDefinition Initialize(string name) 
+            => Initialize(name,  Animator.StringToHash(name));
+
+        protected AnimatorControllerDefinition Initialize(string name, int hash)
         {
             this.name = name;
-            m_hash = Animator.StringToHash(name);
+            this.m_hash = hash;
+            return this;
         }
     }
 }
