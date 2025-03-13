@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Utilities.General.Animation
 {
-	public class AnimatorParameterDefinition : AnimatorControllerDefinition
+	public class AnimatorControllerParameterDefinition : AnimatorControllerDefinition
 	{
 		[SerializeField] private AnimatorControllerParameterType m_type;
 		public AnimatorControllerParameterType Type => m_type;
@@ -12,16 +12,16 @@ namespace Utilities.General.Animation
 		[SerializeField] private bool m_useDampTime = false;
 		[SerializeField] private float m_dampTime = 1.0f;
 		
-		public AnimatorParameterDefinition Initialize(AnimatorController controller, AnimatorControllerParameter parameter)
+		public AnimatorControllerParameterDefinition Initialize(AnimatorController controller, (string name, int hash, int type) parameter)
 		{
-			Initialize($"{controller.name}/{parameter.name}");
-			m_type = parameter.type;
+			Initialize($"{controller.name}/{parameter.name}", parameter.hash);
+			m_type = (AnimatorControllerParameterType)parameter.type;
 			return this;
 		}
 		
-		public AnimatorParameterDefinition Initialize(AnimatorParameterDefinition parameter)
+		public AnimatorControllerParameterDefinition Initialize(AnimatorControllerParameterDefinition parameter)
 		{
-			Initialize(parameter.name);
+			Initialize(parameter.name, parameter.m_hash);
 			m_type = parameter.m_type;
 			return this;
 		}

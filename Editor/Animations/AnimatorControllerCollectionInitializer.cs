@@ -6,6 +6,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Utilities.General.Animation
 {
@@ -52,14 +53,14 @@ namespace Utilities.General.Animation
         private static void CreateAnimatorControllerHandler()
         {
             var animatorController = Selection.activeObject as AnimatorController;
-            CreateAnimatorControllerCollection<AnimatorControllerParametersCollection, AnimatorParameterDefinition>(
+            CreateAnimatorControllerCollection<AnimatorControllerParametersCollection, AnimatorControllerParameterDefinition>(
                 animatorController, 
                 (controller, collection) =>
                 controller.parameters
                     .Select(parameter =>
                     {
-                        var definition = ScriptableObject.CreateInstance<AnimatorParameterDefinition>()
-                            .Initialize(controller, parameter);
+                        var definition = ScriptableObject.CreateInstance<AnimatorControllerParameterDefinition>()
+                            .Initialize(controller, (parameter.name, parameter.nameHash, (int)parameter.type));
                         AssetDatabase.AddObjectToAsset(definition, collection);
                         return definition;
                     }));
@@ -115,8 +116,7 @@ namespace Utilities.General.Animation
             collection.ApplyChanges();
         }
         
-        public static void ApplyChanges<T>(this AnimatorControllerCollection<T> instance)
-            where T : AnimatorControllerDefinition
+        public static void ApplyChanges(this Object instance)
         {
             EditorUtility.SetDirty(instance);
             AssetDatabase.SaveAssetIfDirty(instance);

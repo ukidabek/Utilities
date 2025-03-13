@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -8,10 +8,16 @@ using AnimatorController = UnityEditor.Animations.AnimatorController;
 
 namespace Utilities.General.Animation
 {
-    [CustomEditor(typeof(AnimatorControllerParametersCollection))]
-    public class AnimatorControllerHandlerEditor : Editor
+    public abstract class AnimatorControllerCollectionEditor : Editor
     {
-        private enum RefreshStatus
+        protected struct Data
+        {
+            public string name;
+            public int hahs;
+            public object[] info;
+        }
+        
+        protected enum RefreshStatus
         {
             None = 0,
             Initialize = 1,
@@ -19,12 +25,18 @@ namespace Utilities.General.Animation
             Apply = 3,
         }
         
-        private readonly List<AnimatorParameterDefinition> m_validParameters = new List<AnimatorParameterDefinition>(30);
-        private readonly List<AnimatorParameterDefinition> m_parametersToAdd = new List<AnimatorParameterDefinition>(30);
-        private readonly List<AnimatorParameterDefinition> m_parametersToRemove = new List<AnimatorParameterDefinition>(30);
-        private readonly List<bool> m_overrideDefinition = new List<bool>(30);
-        
-        private IEnumerable<IList> ParametersList
+        protected readonly List<AnimatorControllerDefinition> m_validParameters = new List<AnimatorControllerDefinition>(30);
+        protected readonly List<AnimatorControllerDefinition> m_parametersToAdd = new List<AnimatorControllerDefinition>(30);
+        protected readonly List<AnimatorControllerDefinition> m_parametersToRemove = new List<AnimatorControllerDefinition>(30);
+        protected readonly List<bool> m_overrideDefinition = new List<bool>(30);
+        protected AnimatorController m_animatorController = null;
+        protected AnimatorControllerDefinition[] m_parameterDefinitions = null;
+        protected ReorderableList m_parametersToAddList;
+        protected ReorderableList m_parametersToRemoveList;
+        internal AnimatorControllerCollectionInitializer.ConnectionFieldInfo FieldInfo = default;
+        protected RefreshStatus m_refreshStatus = RefreshStatus.None;
+
+        protected IEnumerable<IList> ParametersList
         {
             get
             {
@@ -34,27 +46,17 @@ namespace Utilities.General.Animation
                 yield return m_overrideDefinition;
             }
         }
-    
-        private AnimatorController m_handledAnimatorController = null;
-        private AnimatorParameterDefinition[] m_parameterDefinitions = null;
 
-        private RefreshStatus m_refreshStatus = RefreshStatus.None;
-
-        private ReorderableList m_parametersToAddList;
-        private ReorderableList m_parametersToRemoveList;
-        
-        private AnimatorControllerCollectionInitializer.ConnectionFieldInfo FieldInfo = default;
-        
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             FieldInfo = AnimatorControllerCollectionInitializer.FieldInfoDictionary[target.GetType()];
             
-            m_handledAnimatorController = FieldInfo.HandledAnimatorControllerFieldInfo.GetValue(target) as AnimatorController;
-            m_parameterDefinitions = FieldInfo.DefinitionsFieldInfo.GetValue(target) as AnimatorParameterDefinition[];
+            m_animatorController = FieldInfo.HandledAnimatorControllerFieldInfo.GetValue(target) as AnimatorController;
+            m_parameterDefinitions = FieldInfo.DefinitionsFieldInfo.GetValue(target) as AnimatorControllerParameterDefinition[];
 
             m_parametersToAddList = new ReorderableList(
                 m_parametersToAdd, 
-                typeof(AnimatorParameterDefinition), 
+                typeof(AnimatorControllerParameterDefinition), 
                 true,
                 true, 
                 false, 
@@ -66,7 +68,7 @@ namespace Utilities.General.Animation
             
             m_parametersToRemoveList = new ReorderableList(
                 m_parametersToRemove, 
-                typeof(AnimatorParameterDefinition), 
+                typeof(AnimatorControllerParameterDefinition), 
                 true,
                 true, 
                 false, 
@@ -80,26 +82,39 @@ namespace Utilities.General.Animation
                 m_refreshStatus = RefreshStatus.Initialize;
         }
 
-        public override void OnInspectorGUI()
+        protected void GetRefreshInformation()
         {
-            base.OnInspectorGUI();
-
-            switch (m_refreshStatus)
+            if (!GUILayout.Button("Refresh")) return;
+            
+            foreach (var list in ParametersList)
+                list.Clear();
+        
+            var parameters = GetData();
+            
+            var length = parameters.Length;
+            for (var i = 0; i < length; i++)
             {
-                case RefreshStatus.None:
-                    GetRefreshInformation();
-                    break;
-                case RefreshStatus.Initialize:
-                    Initialize();
-                    break;
-                case RefreshStatus.Validation:
-                    ValidateChanges();
-                    break;
-                case RefreshStatus.Apply:
-                    ApplyChanges();
-                    break;
+                var parameter = parameters[i];
+                var selectedDefinition = m_parameterDefinitions.FirstOrDefault(definition => definition.Hash == parameter.hahs);
+                
+                if (selectedDefinition is not null)
+                {
+                    m_validParameters.Add(selectedDefinition);
+                    continue;
+                }
+                
+                m_parametersToAdd.Add(CreateDefinition(parameter));
             }
+            
+            m_parametersToRemove.AddRange(m_parameterDefinitions.Except(m_validParameters));
+            m_overrideDefinition.AddRange(new bool[m_parametersToRemove.Count]);
+            
+            m_refreshStatus = RefreshStatus.Validation;
         }
+
+        protected abstract AnimatorControllerDefinition CreateDefinition(Data parameter);
+
+        protected abstract Data[] GetData();
 
         private void ApplyChanges()
         {
@@ -108,7 +123,7 @@ namespace Utilities.General.Animation
             {
                 if (!m_overrideDefinition[i]) continue;
                 var processedDefinition = m_parametersToRemove[i];
-                processedDefinition.Initialize(m_parametersToAdd[i]);
+                OverrideDefinition(processedDefinition, m_parametersToAdd[i]);
                 EditorUtility.SetDirty(processedDefinition);
                 m_validParameters.Add(processedDefinition);
                 m_parametersToAdd.RemoveAt(i);
@@ -122,32 +137,31 @@ namespace Utilities.General.Animation
                 AssetDatabase.RemoveObjectFromAsset(itemToRemove);
 
             m_parameterDefinitions = m_validParameters.Concat(m_parametersToAdd).ToArray();
-            FieldInfo.DefinitionsFieldInfo.SetValue(target, m_parameterDefinitions);
+            FieldInfo.DefinitionsFieldInfo.SetValue(target, ConvertParameterDefinition(m_parameterDefinitions));
             
             serializedObject.ApplyModifiedProperties();
-            (target as AnimatorControllerParametersCollection).ApplyChanges();
+            target.ApplyChanges();
             
             m_refreshStatus = RefreshStatus.None;
         }
+
+        protected abstract object ConvertParameterDefinition(AnimatorControllerDefinition[] parameterDefinitions);
+        
+        protected abstract void OverrideDefinition(AnimatorControllerDefinition destination, AnimatorControllerDefinition animatorControllerDefinition);
 
         private void Initialize()
         {
             if (!GUILayout.Button("Initialize")) return;
-            m_parameterDefinitions = m_handledAnimatorController.parameters
-                .Select(parameter => CreateInstance<AnimatorParameterDefinition>()
-                    .Initialize(m_handledAnimatorController, parameter))
-                .Select(parameter =>
-                {
-                    AssetDatabase.AddObjectToAsset(parameter, target);
-                    return parameter;
-                })
-                .ToArray();
+            
+            m_parameterDefinitions = GetDefinitions().ToArray();
 
             FieldInfo.DefinitionsFieldInfo.SetValue(target, m_parameterDefinitions);
             serializedObject.ApplyModifiedProperties();
             m_refreshStatus = RefreshStatus.None;
         }
-        
+
+        protected abstract IEnumerable<AnimatorControllerDefinition> GetDefinitions();
+
         private void ValidateChanges()
         {
             if (m_parametersToAdd.Count == 0 && m_parametersToRemove.Count == 0)
@@ -185,37 +199,26 @@ namespace Utilities.General.Animation
             
             EditorGUILayout.EndHorizontal();
         }
-
-        private void GetRefreshInformation()
-        {
-            if (!GUILayout.Button("Refresh")) return;
-            
-            foreach (var list in ParametersList)
-                list.Clear();
         
-            var parameters = m_handledAnimatorController.parameters;
-            var length = parameters.Length;
-            
-            for (var i = 0; i < length; i++)
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            switch (m_refreshStatus)
             {
-                var parameter = parameters[i];
-                var hash = Animator.StringToHash(parameter.name);
-                var selectedDefinition = m_parameterDefinitions.FirstOrDefault(definition => definition.Hash == hash);
-                
-                if (selectedDefinition is not null)
-                {
-                    m_validParameters.Add(selectedDefinition);
-                    continue;
-                }
-                
-                m_parametersToAdd.Add(CreateInstance<AnimatorParameterDefinition>()
-                    .Initialize(m_handledAnimatorController, parameter));
+                case RefreshStatus.None:
+                    GetRefreshInformation();
+                    break;
+                case RefreshStatus.Initialize:
+                    Initialize();
+                    break;
+                case RefreshStatus.Validation:
+                    ValidateChanges();
+                    break;
+                case RefreshStatus.Apply:
+                    ApplyChanges();
+                    break;
             }
-            
-            m_parametersToRemove.AddRange(m_parameterDefinitions.Except(m_validParameters));
-            m_overrideDefinition.AddRange(new bool[m_parametersToRemove.Count]);
-            
-            m_refreshStatus = RefreshStatus.Validation;
         }
     }
 }
