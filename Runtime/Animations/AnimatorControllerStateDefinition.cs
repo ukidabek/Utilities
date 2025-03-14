@@ -16,14 +16,21 @@ namespace Utilities.General.Animation
         {
             m_layerName = info.layerName;
             m_layerIndex = info.layerIndex;
-            return base.Initialize(string.Join("/", controller.name, info.layerName, info.stateName), info.nameHash) 
-                as AnimatorControllerStateDefinition;
+            var name = string.Join("/", controller.name, info.layerName, info.stateName);
+            return Initialize(name, info.nameHash) as AnimatorControllerStateDefinition;
         }
 
         public bool IsInState(Animator animator)
         {
             var currentState = animator.GetCurrentAnimatorStateInfo(m_layerIndex);
             return currentState.shortNameHash == m_hash;
+        }
+
+        public void Initialize(AnimatorControllerStateDefinition source)
+        {
+            m_layerName = source.m_layerName;
+            m_layerIndex = source.m_layerIndex;
+            base.Initialize(source.name, source.Hash);
         }
     }
 }

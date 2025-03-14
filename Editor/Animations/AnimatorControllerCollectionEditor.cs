@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -52,7 +53,8 @@ namespace Utilities.General.Animation
             FieldInfo = AnimatorControllerCollectionInitializer.FieldInfoDictionary[target.GetType()];
             
             m_animatorController = FieldInfo.HandledAnimatorControllerFieldInfo.GetValue(target) as AnimatorController;
-            m_parameterDefinitions = FieldInfo.DefinitionsFieldInfo.GetValue(target) as AnimatorControllerParameterDefinition[];
+            var value = FieldInfo.DefinitionsFieldInfo.GetValue(target) as IList;
+            m_parameterDefinitions = value.Cast<AnimatorControllerDefinition>().ToArray();
 
             m_parametersToAddList = new ReorderableList(
                 m_parametersToAdd, 
@@ -95,7 +97,7 @@ namespace Utilities.General.Animation
             for (var i = 0; i < length; i++)
             {
                 var parameter = parameters[i];
-                var selectedDefinition = m_parameterDefinitions.FirstOrDefault(definition => definition.Hash == parameter.hahs);
+                var selectedDefinition = m_parameterDefinitions.FirstOrDefault(definition => CompareDataToDefinition(parameter, definition));
                 
                 if (selectedDefinition is not null)
                 {
@@ -147,7 +149,10 @@ namespace Utilities.General.Animation
 
         protected abstract object ConvertParameterDefinition(AnimatorControllerDefinition[] parameterDefinitions);
         
-        protected abstract void OverrideDefinition(AnimatorControllerDefinition destination, AnimatorControllerDefinition animatorControllerDefinition);
+        protected abstract void OverrideDefinition(AnimatorControllerDefinition destination, AnimatorControllerDefinition source);
+
+        protected virtual bool CompareDataToDefinition(Data data, AnimatorControllerDefinition definition) 
+            => definition.Hash == data.hahs;
 
         private void Initialize()
         {
