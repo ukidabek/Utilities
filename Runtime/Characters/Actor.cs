@@ -34,7 +34,7 @@ namespace Utilities.General.Characters
         protected bool HandleStatusProvider<T>(T statusProvider) where T : IStatus
         {
             if (statusProvider is not null) return statusProvider.Status;
-            Debug.LogWarning($"Status provider of type <b>{typeof(T).Name}</b> is null.");
+            Debug.LogWarning($"Status provider of type <b>{typeof(T).Name}</b> is null.", gameObject);
             return false;
         }
 
