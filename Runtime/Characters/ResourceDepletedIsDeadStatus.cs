@@ -5,15 +5,15 @@ using UnityEngine.Scripting;
 namespace Utilities.General.Characters
 {
     [Serializable, Preserve]
-    public class ResourceDepletedIsDeadStatusProvider : IIsDeadStatusProvider
+    public class ResourceDepletedIsDeadStatus : IIsDeadStatus
     {
         [SerializeField] private Key m_resourceKey;
 
-        protected ICharacterResource m_resource = null;
+        protected IResource m_resource = null;
         
         public bool Status => m_resource?.Value == 0f;
 
-        public void Initialize(Character character)
+        public void Initialize(Actor actor)
         {
             if (m_resourceKey == null)
             {
@@ -21,7 +21,7 @@ namespace Utilities.General.Characters
                 return;
             }
             
-            if (!character.TryGetResource(m_resourceKey, out var resource))
+            if (!actor.TryGetResource(m_resourceKey, out var resource))
             {
                 Debug.LogError($"There is no resource with key {m_resourceKey.name}!");
                 return;

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Utilities.General.Characters
 {
     [Serializable]
-    public class RegeneratingCharacterResource : UpdatableCharacterResource
+    public class RenewableResource : UpdatableResource
     {
         [SerializeField] protected float m_regenerationSpeed = 1f;
         public float RegenerationSpeed

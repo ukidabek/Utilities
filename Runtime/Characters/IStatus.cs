@@ -1,8 +1,8 @@
 ﻿namespace Utilities.General.Characters
 {
-	public interface IStatusProvider
+	public interface IStatus
 	{
 		bool Status { get; }
-		void Initialize(Character character);
+		void Initialize(Actor actor);
 	}
 }

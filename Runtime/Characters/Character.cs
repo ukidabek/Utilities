@@ -1,68 +1,17 @@
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-
 namespace Utilities.General.Characters
 {
-	public abstract class Character : MonoBehaviour
+	public abstract class Character : Actor
 	{
-		[SerializeField] private CharacterCollection m_characterPool = null;
-		public CharacterCollection CharacterPool => m_characterPool;
-
-		[ReferenceList, SerializeReference] private ICharacterResource[] m_characterResources = null;
-		public IEnumerable<ICharacterResource> Resources => m_characterResources;
+		private IIsDeadStatus m_isDeadStatus = null;
 		
-		private Dictionary<Key, ICharacterResource> m_resourcesDictionary = new Dictionary<Key, ICharacterResource>();
-
-		[Reference, SerializeReference] private IIsDeadStatusProvider m_isDeadStatusProvider = null;
-		public bool IsDead => HandleStatusProvider(m_isDeadStatusProvider);
+		public bool IsDead => HandleStatusProvider(m_isDeadStatus);
+		
 		public bool IsAlive => !IsDead;
 
-		protected virtual IEnumerable<IStatusProvider> StatusProviders
+		protected override void Awake()
 		{
-			get
-			{
-				yield return m_isDeadStatusProvider;
-			}
-		}
-		
-		protected virtual void Awake()
-		{
-			foreach (var resource in m_characterResources)
-			{
-				m_resourcesDictionary.Add(resource.Key, resource);
-				resource.Initialize();
-			}
-			
-			foreach (var statusProvider in StatusProviders) 
-				statusProvider.Initialize(this);
-		}
-		
-		protected virtual void OnEnable() => m_characterPool?.AddCharacter(this);
-
-		protected virtual void OnDisable() => m_characterPool?.RemoveCharacter(this);
-
-		protected virtual void Reset() => m_isDeadStatusProvider = new ResourceDepletedIsDeadStatusProvider();
-
-		public IEnumerable<T> GetResourcesOfType<T>() where T : CharacterResource => m_characterResources.OfType<T>();
-
-		public void ResetResources()
-		{
-			foreach (var resource in m_characterResources) 
-				resource.Reset();
-		}
-		
-		public bool TryGetResource(Key key, out ICharacterResource resource) => m_resourcesDictionary.TryGetValue(key, out resource);
-		
-		public bool HaveResource(Key key) => m_resourcesDictionary.ContainsKey(key);
-		
-		public ICharacterResource this[Key key] => m_resourcesDictionary[key]; 
-		
-		public bool HandleStatusProvider<T>(T statusProvider) where T : IStatusProvider
-		{
-			if (statusProvider != null) return statusProvider.Status;
-			Debug.LogWarning($"Status provider of type <b>{typeof(T).Name}</b> is null.");
-			return false;
+			base.Awake();
+			TryGetStatus(out m_isDeadStatus);
 		}
 	}
 }

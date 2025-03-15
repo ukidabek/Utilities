@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Utilities.General.Characters
 {
     [Serializable]
-    public class CharacterResource : ICharacterResource
+    public class Resource : IResource
     {
         [SerializeField] private Key m_key = null;
         public Key Key => m_key;

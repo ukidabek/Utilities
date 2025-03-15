@@ -2,7 +2,7 @@
 
 namespace Utilities.General.Characters
 {
-	public interface ICharacterResource
+	public interface IResource
 	{
 		public Key Key { get; }
 		float Value { get; set; }
