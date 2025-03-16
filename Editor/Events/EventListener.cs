@@ -1,0 +1,38 @@
+using System;
+using System.Reflection;
+using UnityEditor;
+using UnityEngine;
+
+namespace Utilities.General.Events
+{
+    [CustomEditor(typeof(EventListener<,>), true)]
+    public class EventListener : Editor
+    {
+        private Type m_baseType =  typeof(EventListener<>);
+        public PropertyInfo EventPropertyInfo = null;
+        private FieldInfo m_eventColorFieldInfo = null;
+
+        private void OnEnable()
+        {
+            EventPropertyInfo = target.GetType()
+                .GetProperty(EventEditorUtilities.Event_Property_Name, 
+                EventEditorUtilities.Binding_Flags);
+            
+            m_eventColorFieldInfo = EventPropertyInfo.PropertyType.GetField(
+                EventEditorUtilities.Color_Field_Name, EventEditorUtilities.Binding_Flags);
+        }
+
+
+        public override void OnInspectorGUI()
+        {
+            var @event = EventPropertyInfo.GetValue(target);
+            var eventColor = (Color)m_eventColorFieldInfo.GetValue(@event);
+            var oldColor = GUI.color;
+            GUI.color = eventColor;
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUI.color = oldColor;
+            base.OnInspectorGUI();
+            EditorGUILayout.EndVertical();
+        }
+    }
+}
