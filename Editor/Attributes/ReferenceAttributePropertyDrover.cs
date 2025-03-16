@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace Utilities.General
 {
-    [CustomPropertyDrawer(typeof(ReferenceAttribute))]    
-    public class ReferencePropertyDrover : PropertyDrawer
+#if UNITY_2023_1_OR_NEWER
+    [CustomPropertyDrawer(typeof(ReferenceListAttribute))]
+#endif  
+    public class ReferenceAttributePropertyDrover : PropertyDrawer
     {
         private TypeProvider m_typeProvider = null;
         

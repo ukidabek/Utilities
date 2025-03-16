@@ -11,7 +11,7 @@ namespace Utilities.General
 #if UNITY_2023_1_OR_NEWER
     [CustomPropertyDrawer(typeof(ReferenceListAttribute))]
 #endif
-    public class ReferenceListPropertyDrover : PropertyDrawer
+    public class ReferenceListAttributePropertyDrover : PropertyDrawer
     {
         private ReorderableList m_reorderableList = null;
         private TypeProvider m_typeProvider = null;
@@ -21,7 +21,7 @@ namespace Utilities.General
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            Profiler.BeginSample($"{nameof(ReferenceListPropertyDrover)} invoke OnGUI");
+            Profiler.BeginSample($"{nameof(ReferenceListAttributePropertyDrover)} invoke OnGUI");
             if (m_isTypeInvalid.Value)
             {
                 EditorGUI.LabelField(position, $"Field {label} is invalid!");
