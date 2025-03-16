@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Utilities.General.Characters
 {
-    [CreateAssetMenu(menuName = "Character/CharacterCollection")]
+    [CreateAssetMenu(menuName = "Utilities/Character/ActorsCollection", fileName =  "ActorsCollection")]
     public class ActorsCollection : ScriptableObject, IEnumerable<Actor>
     {
         private ObservableCollection<Actor> m_actorsList = new ObservableCollection<Actor>();

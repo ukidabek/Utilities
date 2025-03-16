@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using Event = UnityEngine.Event;
 
 namespace Utilities.General
 {

@@ -5,6 +5,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Profiling;
+using Event = UnityEngine.Event;
 
 namespace Utilities.General
 {
