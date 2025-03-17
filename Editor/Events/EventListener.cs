@@ -26,6 +26,12 @@ namespace Utilities.General.Events
         public override void OnInspectorGUI()
         {
             var @event = EventPropertyInfo.GetValue(target);
+            if (@event is null)
+            {
+                base.OnInspectorGUI();
+                return;
+            }
+            
             var eventColor = (Color)m_eventColorFieldInfo.GetValue(@event);
             var oldColor = GUI.color;
             GUI.color = eventColor;

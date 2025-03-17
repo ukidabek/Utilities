@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Utilities.General.Events
 {
     [CreateAssetMenu(menuName = "Utilities/Events/Vector2Event", fileName = "Vector2Event")]
-    public class Vector2Event : Event<Vector2>
+    public class Vector2Event : ParameterizedEvent<Vector2>
     {
     }
 }

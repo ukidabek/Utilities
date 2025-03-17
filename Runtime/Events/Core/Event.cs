@@ -1,52 +1,55 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Utilities.General.Events
 {
-    public abstract class Event<T> : ScriptableObject
+    public abstract class Event<T> : ScriptableObject where T : IEventListener
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        private const string Invoke_Log_Format = "[<color=#{0}>Event</color>] {1} invoked! Value: {2}";
+        protected const string Invoke_Log_Format = "[<color=#{0}>Event</color>] {1} invoked!";
 
-        [SerializeField] private bool m_enableLogging = false;
-        [SerializeField] private Color m_color = new Color(0f, 0f, 0f, 1f);
+        [SerializeField] protected bool m_enableLogging = false;
+        [SerializeField] protected Color m_color = new Color(0f, 0f, 0f, 1f);
 #endif
         
-        private string m_colorHexValue = string.Empty;
+        protected HashSet<T> m_listeners = new HashSet<T>(30);
 
-        private HashSet<EventListener<T>> m_listeners = new HashSet<EventListener<T>>(30);
-
-        private void OnEnable()
+        public virtual void Invoke()
         {
-            m_colorHexValue = ColorUtility.ToHtmlStringRGB(m_color);
+            LogEventInvoke();
+            InvokeListeners(m_listeners, listener => listener.Invoke());
         }
 
-        public void Subscribe(EventListener<T> listener) => m_listeners.Add(listener);
-
-        public void Unsubscribe(EventListener<T> listener) => m_listeners.Remove(listener);
-
-        public void Invoke(T eventArgument)
+        protected static void InvokeListeners(HashSet<T> listeners, Action<T> invoker)
         {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (m_enableLogging)
-            {
-                var valuesString = eventArgument is null ? "null" : eventArgument.ToString();
-                Debug.LogFormat(Invoke_Log_Format, m_colorHexValue, name, valuesString);
-            }
-#endif
-            foreach (var listener in m_listeners)
+            foreach (var listener in listeners)
             {
                 try
                 {
-                    listener.Invoke(eventArgument);
+                    invoker(listener);
                 }
                 catch (Exception exception)
                 {
                     Debug.LogException(exception);
                 }
             }
+        }
+
+        public void Subscribe(T listener) => m_listeners.Add(listener);
+
+        public void Unsubscribe(T listener) => m_listeners.Remove(listener);
+
+        [Conditional("UNITY_EDITOR")]
+        [Conditional("DEVELOPMENT_BUILD")]
+        protected void LogEventInvoke()
+        {
+            if (!m_enableLogging) return;
+            var colorHexValue = ColorUtility.ToHtmlStringRGB(m_color);
+            Debug.LogFormat(Invoke_Log_Format, colorHexValue, name);
+
         }
     }
 }

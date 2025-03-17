@@ -3,20 +3,38 @@ using UnityEngine.Events;
 
 namespace Utilities.General.Events
 {
-    public class EventListener<T, T1> : EventListener<T1> where T : Event<T1>
+    public class EventListener<T, T1> : EventListener<T1> where T : ParameterizedEvent<T1>
     {
         [SerializeField] private T m_event;
-        protected override Event<T1> Event => m_event;
+        protected override ParameterizedEvent<T1> Event => m_event;
     }
 
-    public abstract class EventListener<T> : MonoBehaviour
+    public abstract class EventListener<T> : MonoBehaviour, IEventListener<T>
     {
         public UnityEvent<T> Callback =  new UnityEvent<T>();
-        protected abstract Event<T> Event { get; }
+        protected abstract ParameterizedEvent<T> Event { get; }
         private void OnEnable() => Event?.Subscribe(this);
 
         private void OnDisable() => Event?.Unsubscribe(this);
+
+        public void Invoke() => Invoke(default);
         
         public void Invoke(T eventArgument) => Callback.Invoke(eventArgument);
+        
+    }
+
+    public abstract class EventListener : MonoBehaviour, IEventListener
+    {
+        public abstract void Invoke();
+    }
+
+    public interface IEventListener
+    {
+        void Invoke();
+    }
+
+    public interface IEventListener<in T> : IEventListener
+    {
+        void Invoke(T eventArgument);
     }
 }
