@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Utilities.General.Events
+namespace Utilities.General.Events.Core
 {
     [CustomEditor(typeof(Event<>), true)]
     public class EventEditor : Editor

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Utilities.General.Events
+namespace Utilities.General.Events.Core
 {
     public class EventListener<T, T1> : EventListener<T1> where T : ParameterizedEvent<T1>
     {

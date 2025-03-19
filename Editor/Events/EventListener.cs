@@ -3,7 +3,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace Utilities.General.Events
+namespace Utilities.General.Events.Core
 {
     [CustomEditor(typeof(EventListener<,>), true)]
     public class EventListener : Editor

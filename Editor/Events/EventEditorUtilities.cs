@@ -1,7 +1,7 @@
 using System.Reflection;
 using UnityEditor;
 
-namespace Utilities.General.Events
+namespace Utilities.General.Events.Core
 {
     internal static class EventEditorUtilities
     {

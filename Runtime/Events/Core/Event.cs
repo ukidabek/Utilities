@@ -4,9 +4,9 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Utilities.General.Events
+namespace Utilities.General.Events.Core
 {
-    public abstract class Event<T> : ScriptableObject where T : IEventListener
+    public abstract class Event<T> : ScriptableObject, IEvent where T : IEventListener
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         protected const string Invoke_Log_Format = "[<color=#{0}>Event</color>] {1} invoked!";
@@ -16,7 +16,7 @@ namespace Utilities.General.Events
 #endif
         
         protected HashSet<T> m_listeners = new HashSet<T>(30);
-
+        
         public virtual void Invoke()
         {
             LogEventInvoke();
@@ -52,4 +52,8 @@ namespace Utilities.General.Events
 
         }
     }
+}
+
+namespace Utilities.General.Events.Core
+{
 }
