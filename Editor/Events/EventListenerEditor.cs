@@ -5,13 +5,14 @@ using UnityEngine;
 
 namespace Utilities.General.Events.Core
 {
-    [CustomEditor(typeof(EventListener<,>), true)]
-    public class EventListener : Editor
+    [CustomEditor(typeof(EventListener), true)]
+    public class EventListenerEditor : Editor
     {
-        private Type m_baseType =  typeof(EventListener<>);
+        private Type m_baseType =  typeof(IEventListener);
         public PropertyInfo EventPropertyInfo = null;
         private FieldInfo m_eventColorFieldInfo = null;
-
+        
+        
         private void OnEnable()
         {
             EventPropertyInfo = target.GetType()

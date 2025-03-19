@@ -9,7 +9,7 @@ namespace Utilities.General.Events.Core
         protected override ParameterizedEvent<T1> Event => m_event;
     }
 
-    public abstract class EventListener<T> : MonoBehaviour, IEventListener<T>
+    public abstract class EventListener<T> : EventListener, IEventListener<T>
     {
         public UnityEvent<T> Callback =  new UnityEvent<T>();
         protected abstract ParameterizedEvent<T> Event { get; }
@@ -17,7 +17,7 @@ namespace Utilities.General.Events.Core
 
         private void OnDisable() => Event?.Unsubscribe(this);
 
-        public void Invoke() => Invoke(default);
+        public override void Invoke() => Invoke(default);
         
         public void Invoke(T eventArgument) => Callback.Invoke(eventArgument);
         
