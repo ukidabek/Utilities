@@ -6,7 +6,7 @@ using Event = UnityEngine.Event;
 namespace Utilities.General
 {
 #if UNITY_2023_1_OR_NEWER
-    [CustomPropertyDrawer(typeof(ReferenceListAttribute))]
+    [CustomPropertyDrawer(typeof(ReferenceAttribute))]
 #endif  
     public class ReferenceAttributePropertyDrover : PropertyDrawer
     {
