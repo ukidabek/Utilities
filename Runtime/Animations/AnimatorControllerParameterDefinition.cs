@@ -1,5 +1,4 @@
-﻿using UnityEditor.Animations;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Utilities.General.Animation
 {
@@ -12,7 +11,7 @@ namespace Utilities.General.Animation
 		[SerializeField] private bool m_useDampTime = false;
 		[SerializeField] private float m_dampTime = 1.0f;
 		
-		public AnimatorControllerParameterDefinition Initialize(AnimatorController controller, (string name, int hash, int type) parameter)
+		public AnimatorControllerParameterDefinition Initialize(RuntimeAnimatorController controller, (string name, int hash, int type) parameter)
 		{
 			Initialize($"{controller.name}/{parameter.name}", parameter.hash);
 			m_type = (AnimatorControllerParameterType)parameter.type;

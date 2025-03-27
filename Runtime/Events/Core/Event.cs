@@ -8,12 +8,10 @@ namespace Utilities.General.Events.Core
 {
     public abstract class Event<T> : ScriptableObject, IEvent where T : IEventListener
     {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
         protected const string Invoke_Log_Format = "[<color=#{0}>Event</color>] {1} invoked!";
 
         [SerializeField] protected bool m_enableLogging = false;
         [SerializeField] protected Color m_color = new Color(0f, 0f, 0f, 1f);
-#endif
         
         protected HashSet<T> m_listeners = new HashSet<T>(30);
         

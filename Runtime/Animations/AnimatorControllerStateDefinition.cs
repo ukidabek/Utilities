@@ -1,5 +1,4 @@
-﻿using UnityEditor.Animations;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Utilities.General.Animation
 {
@@ -11,7 +10,7 @@ namespace Utilities.General.Animation
         [SerializeField] private int m_layerIndex;
         public int LayerIndex => m_layerIndex;
         
-        public AnimatorControllerStateDefinition Initialize(AnimatorController controller, 
+        public AnimatorControllerStateDefinition Initialize(RuntimeAnimatorController controller, 
             (string layerName, int layerIndex, string stateName, int nameHash) info)
         {
             m_layerName = info.layerName;
