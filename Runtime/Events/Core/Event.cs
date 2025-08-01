@@ -51,7 +51,3 @@ namespace Utilities.General.Events.Core
         }
     }
 }
-
-namespace Utilities.General.Events.Core
-{
-}

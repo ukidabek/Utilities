@@ -52,6 +52,7 @@ namespace Utilities.General
 
             EditorGUI.indentLevel = 0;
             controlPosition.width /= 2f;
+            
             if (GUI.Button(controlPosition, "Select Type"))
             {
                 var mousePosition = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
@@ -66,7 +67,6 @@ namespace Utilities.General
                 property.managedReferenceValue = null;
                 property.serializedObject.ApplyModifiedProperties();
             }
-            
             EditorGUI.EndProperty();
         }
     }

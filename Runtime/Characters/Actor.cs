@@ -14,6 +14,7 @@ namespace Utilities.General.Characters
         [FormerlySerializedAs("m_characterResources")] 
         [ReferenceList, SerializeReference] protected IResource[] m_resources = null;
         protected Dictionary<Key, IResource> m_resourcesDictionary = new Dictionary<Key, IResource>();
+        private bool m_isInitialized = false;
         public IEnumerable<IResource> Resources => m_resources;
 
         [FormerlySerializedAs("m_statusProviders")] [ReferenceList, SerializeReference] protected IStatus[] m_statuses = null;
@@ -27,8 +28,12 @@ namespace Utilities.General.Characters
                 resource.Reset();
         }
 
-        public bool TryGetResource(Key key, out IResource resource) => m_resourcesDictionary.TryGetValue(key, out resource);
-        
+        public bool TryGetResource(Key key, out IResource resource)
+        {
+            InitializeResourceDictionary();
+            return m_resourcesDictionary.TryGetValue(key, out resource);
+        }
+
         public bool HaveResource(Key key) => m_resourcesDictionary.ContainsKey(key);
 
         protected bool HandleStatusProvider<T>(T statusProvider) where T : IStatus
@@ -48,16 +53,25 @@ namespace Utilities.General.Characters
 
         protected virtual void Awake()
         {
+            InitializeResourceDictionary();
+
+            foreach (var statusProvider in Statuses) 
+                statusProvider.Initialize(this);
+        }
+
+        private void InitializeResourceDictionary()
+        {
+            if (m_isInitialized) return;
+            
             foreach (var resource in m_resources)
             {
                 m_resourcesDictionary.Add(resource.Key, resource);
                 resource.Initialize();
             }
-			
-            foreach (var statusProvider in Statuses) 
-                statusProvider.Initialize(this);
+
+            m_isInitialized = true;
         }
-        
+
         protected virtual void OnDisable() => m_actorsPool?.RemoveActor(this);
     }
 }
