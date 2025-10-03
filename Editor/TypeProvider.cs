@@ -28,14 +28,6 @@ namespace Utilities.General
             m_searchTreeEntry.Clear();
             m_searchTreeEntry.Add(new SearchTreeGroupEntry(new GUIContent(baseType.Name)));
 
-            bool TypeValidateLogic(Type type)
-            {
-                if (baseType.IsInterface)
-                    return baseType.IsAssignableFrom(type);
-
-                return type.IsSubclassOf(baseType) && !baseType.IsAssignableFrom(type);
-            }
-            
             CacheTypesIfNecessary();
             
             Profiler.BeginSample($"({nameof(TypeProvider)}) - Generate Tree Entries");
@@ -56,6 +48,16 @@ namespace Utilities.General
                     userData = type,
                 });
             Profiler.EndSample();
+            
+            return;
+
+            bool TypeValidateLogic(Type type)
+            {
+                if (baseType.IsInterface)
+                    return baseType.IsAssignableFrom(type);
+
+                return (type.IsSubclassOf(baseType) || type == baseType) && !type.IsAbstract;
+            }
         }
 
         private static void CacheTypesIfNecessary()
